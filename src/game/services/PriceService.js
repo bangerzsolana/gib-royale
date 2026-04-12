@@ -9,8 +9,9 @@
  * Negative power = dumping = defender
  */
 
-// Scaling factor so power displays as nice numbers like +6.9 or -3.2
-const POWER_SCALE = 5000;
+// Scaling factor: momentum × POWER_SCALE gives nice display numbers
+// e.g. 0.5% above EMA → 0.005 × 1000 = 5.0
+const POWER_SCALE = 1000;
 
 // All gib-meme coins with exact Pyth feed IDs
 const PYTH_COINS = [
@@ -185,16 +186,18 @@ class PriceService {
   }
 
   /**
-   * Calculate power score using Pyth-native formula:
-   * power = ((price - emaPrice) / emaPrice) x (confidence / price) x POWER_SCALE
+   * Calculate power score using price momentum:
+   * power = ((price - emaPrice) / emaPrice) × POWER_SCALE
+   *
+   * Positive = pumping = attacker, Negative = dumping = defender
+   * e.g. price 0.5% above EMA → power = +5.0
    */
   calcPower(symbol) {
     const token = this.tokens[symbol];
-    if (!token || !token.emaPrice || token.emaPrice === 0 || token.price === 0) return 0;
+    if (!token || !token.emaPrice || token.emaPrice === 0) return 0;
 
     const momentum = (token.price - token.emaPrice) / token.emaPrice;
-    const activity = token.confidence / token.price;
-    return parseFloat((momentum * activity * POWER_SCALE).toFixed(1));
+    return parseFloat((momentum * POWER_SCALE).toFixed(1));
   }
 
   /**

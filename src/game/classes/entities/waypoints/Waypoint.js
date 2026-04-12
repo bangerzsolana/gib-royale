@@ -2,7 +2,7 @@ import Phaser from "phaser";
 
 class Waypoint extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, label = "default") {
-    super(scene, x, y, "sapling");
+    super(scene, x, y, "waypoint");
 
     this.isDestroyed = false;
     this.label = label;

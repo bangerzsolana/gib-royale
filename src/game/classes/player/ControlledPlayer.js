@@ -38,12 +38,14 @@ export default class ControlledPlayer extends Player {
         const playerCardHand = this.cardArea.hand;
         const currentCard = playerCardHand.selectedCardSlot.card;
         const troopClass = currentCard.troopClass;
+        const tokenId = currentCard.coinSymbol || null;
 
         const spawnedTroop = this.spawnTroop(
           pointer.worldX,
           pointer.worldY,
           this.troopVelocityDirection,
-          troopClass
+          troopClass,
+          tokenId
         );
 
         if (spawnedTroop) {

@@ -182,9 +182,13 @@ HasPriceData.methods = {
     if (time - this.priceUpdateInterval > this.lastPriceUpdate && this.tokenId) {
       this.lastPriceUpdate = time;
 
-      const priceData = priceService.getTokenPrice(this.tokenId);
-      if (priceData) {
-        this.priceChangePercent = priceData.changePercent1h || 0;
+      const tokenData = priceService.getTokenWithPower(this.tokenId);
+      if (tokenData) {
+        // Use EMA momentum as percent change: (price - ema) / ema * 100
+        const momentum = tokenData.emaPrice
+          ? ((tokenData.price - tokenData.emaPrice) / tokenData.emaPrice) * 100
+          : 0;
+        this.priceChangePercent = momentum;
         this.recalculateStats();
         this.updatePriceIndicator();
       }

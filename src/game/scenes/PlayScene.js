@@ -58,8 +58,8 @@ export default class PlayScene extends Scene {
         .setOrigin(0.5, 0.5)
         .setTint(0x228800);
 
-      // Start price simulation for the battle
-      priceService.startSimulation();
+      // Start live price polling for the battle
+      priceService.startPolling();
 
       this.player = new ControlledPlayer(this);
       this.opponent = new ComputerPlayer(this);
@@ -126,11 +126,11 @@ export default class PlayScene extends Scene {
         try {
           if (this.player.towers.getLength() === 0) {
             this.events.off("tower-destroyed");
-            priceService.stopSimulation();
+            priceService.stopPolling();
             this.scene.start("LoseScene");
           } else if (this.opponent.towers.getLength() === 0) {
             this.events.off("tower-destroyed");
-            priceService.stopSimulation();
+            priceService.stopPolling();
             this.scene.start("WinScene");
           }
         } catch (e) {
@@ -145,7 +145,7 @@ export default class PlayScene extends Scene {
   update(time, delta) {}
 
   destroy() {
-    priceService.stopSimulation();
+    priceService.stopPolling();
     this.player.destroy();
     this.opponent.destroy();
     super.destroy();

@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import Tower from "../entities/environment/Tower.js";
 import Walkers from "../entities/troops/walkers/index.js";
 
-// Dynamically populate the card types from our Troop classes
+// Fallback card types from all troop classes (used by ComputerPlayer)
 const cardTypes = [];
 for (const troopClass of Object.values(Walkers)) {
   cardTypes.push({
@@ -79,7 +79,7 @@ class Player {
     return this;
   }
 
-  spawnTroop(x, y, velocityDirection, troopClass) {
+  spawnTroop(x, y, velocityDirection, troopClass, tokenId) {
     try {
       if (!Phaser.Geom.Rectangle.Contains(this.spawnZone, x, y)) return;
 
@@ -100,7 +100,8 @@ class Player {
         owner: this,
         x,
         y,
-        velocityDirection
+        velocityDirection,
+        tokenId: tokenId || null
       });
 
       this.manaBank.deductMana(CardType.cost);

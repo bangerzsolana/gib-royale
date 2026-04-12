@@ -1,6 +1,6 @@
 import Phaser from "phaser";
-import Walkers from "../troops/walkers/index.js";
 import Card from "./Card.js";
+import COIN_DECK from "../../../data/CoinDeck.js";
 
 class Deck extends Phaser.GameObjects.Container {
   constructor(scene, x, y, width, height) {
@@ -16,11 +16,16 @@ class Deck extends Phaser.GameObjects.Container {
   }
 
   populate() {
-    for (let troopClass of Object.values(Walkers)) {
-      if (troopClass.IS_IN_DECK) {
-        const thisCard = new Card(this.scene, 0, 0, troopClass);
-        this.add(thisCard);
-      }
+    // Build deck from coin-mapped cards
+    for (const coinEntry of COIN_DECK) {
+      const thisCard = new Card(
+        this.scene,
+        0, 0,
+        coinEntry.troopClass,
+        coinEntry.symbol
+      );
+      thisCard.coinEntry = coinEntry;
+      this.add(thisCard);
     }
   }
 

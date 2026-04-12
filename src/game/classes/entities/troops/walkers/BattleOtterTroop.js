@@ -5,7 +5,6 @@ const MIXINS = [Components.CanWalk];
 class BattleOtterTroop extends Troop {
   constructor(config) {
     super(MIXINS, { ...config, animKeyPrefix: STATIC.ANIM_KEY_PREFIX });
-    this.setTint(0xffffff);
     this.setMovementSpeed(15);
     this.setOverallHealth(50);
     this.setAttentionRange(40);

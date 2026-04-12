@@ -148,7 +148,7 @@ HasPriceData.methods = {
         callback: () => {
           if (!this.isDestroyed) {
             this.isMooning = false;
-            this.setTint(0xffffff);
+            this.setTint(this.coinColor || 0xffffff);
             this.recalculateStats();
           }
         }

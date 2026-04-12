@@ -5,7 +5,6 @@ const MIXINS = [Components.CanWalk];
 class BabyCowTroop extends Troop {
   constructor(config) {
     super(MIXINS, { ...config, animKeyPrefix: STATIC.ANIM_KEY_PREFIX });
-    this.setTint(0xffffff);
     this.setMovementSpeed(20);
     this.setOverallHealth(10);
     this.setAttentionRange(20);

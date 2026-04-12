@@ -6,7 +6,6 @@ const MIXINS = [Components.CanSpawn, Components.IsImmovable, Components.HasDamag
 class VolcanoTroop extends Troop {
   constructor(config) {
     super(MIXINS, { ...config, animKeyPrefix: STATIC.ANIM_KEY_PREFIX });
-    this.setTint(0xffffff);
     this.setOverallHealth(50);
     this.setAttentionRange(0);
     this.setEffectRange(0);

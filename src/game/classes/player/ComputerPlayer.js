@@ -1,5 +1,6 @@
 import Player from "./Player.js";
 import ManaBank from "../ManaBank.js";
+import COIN_DECK from "../../data/CoinDeck.js";
 
 export default class ComputerPlayer extends Player {
   constructor(scene) {
@@ -24,10 +25,14 @@ export default class ComputerPlayer extends Player {
 
     if (manaAmount >= 3) {
       if (Math.random() < 0.25) {
+        // Pick a random coin from the deck — opponent uses the same coin system
+        const pick = COIN_DECK[Math.floor(Math.random() * COIN_DECK.length)];
         this.spawnTroop(
           parseInt(Math.random() * this.scene.game.config.width, 0),
           80,
-          this.troopVelocityDirection
+          this.troopVelocityDirection,
+          pick.troopClass,
+          pick.symbol
         );
       }
     }

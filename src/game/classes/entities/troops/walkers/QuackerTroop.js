@@ -5,7 +5,6 @@ const MIXINS = [Components.CanFly];
 class QuackerTroop extends Troop {
   constructor(config) {
     super(MIXINS, { ...config, animKeyPrefix: STATIC.ANIM_KEY_PREFIX });
-    this.setTint(0xffffff);
     this.setMovementSpeed(10);
     this.setOverallHealth(50);
     this.setAttentionRange(20);

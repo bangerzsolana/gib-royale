@@ -5,7 +5,6 @@ const MIXINS = [Components.CanWalk];
 class ChickphinTroop extends Troop {
   constructor(config) {
     super(MIXINS, { ...config, animKeyPrefix: STATIC.ANIM_KEY_PREFIX });
-    this.setTint(0xffffff);
     this.setMovementSpeed(8);
     this.setOverallHealth(200);
     this.setAttentionRange(40);

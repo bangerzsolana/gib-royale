@@ -5,7 +5,6 @@ const MIXINS = [Components.CanWalk];
 class MagicPuppyTroop extends Troop {
   constructor(config) {
     super(MIXINS, { ...config, animKeyPrefix: STATIC.ANIM_KEY_PREFIX });
-    this.setTint(0xffffff);
     this.setMovementSpeed(17);
     this.setOverallHealth(50);
     this.setAttentionRange(60);

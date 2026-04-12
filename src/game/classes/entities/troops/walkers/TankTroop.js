@@ -5,7 +5,6 @@ const MIXINS = [Components.CanWalk];
 class TankTroop extends Troop {
   constructor(config) {
     super(MIXINS, { ...config, animKeyPrefix: STATIC.ANIM_KEY_PREFIX });
-    this.setTint(0xffffff);
     this.setMovementSpeed(5);
     this.setOverallHealth(200);
     this.setAttentionRange(50);

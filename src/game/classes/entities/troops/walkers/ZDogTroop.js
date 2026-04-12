@@ -5,7 +5,6 @@ const MIXINS = [Components.CanWalk];
 class ZDogTroop extends Troop {
   constructor(config) {
     super(MIXINS, { ...config, animKeyPrefix: STATIC.ANIM_KEY_PREFIX });
-    this.setTint(0xffffff);
     this.setMovementSpeed(10);
     this.setOverallHealth(40);
     this.setAttentionRange(30);

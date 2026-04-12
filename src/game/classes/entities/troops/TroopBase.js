@@ -50,15 +50,15 @@ class TroopBase extends PhysicalEntity {
 
     this.setOverallHealth(100);
 
-    // Apply coin color tint
+    // Apply coin color tint and store it for later restoration (e.g. after moon buff)
     if (config.tokenId && COIN_COLORS[config.tokenId]) {
-      this.setTint(COIN_COLORS[config.tokenId]);
+      this.coinColor = COIN_COLORS[config.tokenId];
     } else if (config.owner && config.owner.troopVelocityDirection === 1) {
-      // Opponent troops get a red tint
-      this.setTint(0xff4444);
+      this.coinColor = 0xff4444;
     } else {
-      this.setTint(0x4488ff);
+      this.coinColor = 0x4488ff;
     }
+    this.setTint(this.coinColor);
 
     // Add coin name label that follows the troop
     const label = config.tokenId || "";

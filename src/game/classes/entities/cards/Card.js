@@ -64,9 +64,20 @@ class Card extends Phaser.GameObjects.Container {
         .setOrigin(0.5, 0.5)
     );
 
-    // Live price indicator (top-left, below mana cost) — shows ▲/▼ with % change
+    // Role/type indicator below coin name
+    this.add(
+      scene.add
+        .text(this.width / 2, 66, troopClass.NAME.replace("Troop", ""), {
+          fontSize: "7px",
+          fontFamily: "Arial, sans-serif",
+          color: "#888899"
+        })
+        .setOrigin(0.5, 0.5)
+    );
+
+    // Live price indicator — prominent, below role name
     this.priceIndicator = scene.add
-      .text(10, 24, "", {
+      .text(this.width / 2, 78, "", {
         fontSize: "9px",
         fontFamily: "Arial, sans-serif",
         fontStyle: "bold",
@@ -74,17 +85,6 @@ class Card extends Phaser.GameObjects.Container {
       })
       .setOrigin(0.5, 0.5);
     this.add(this.priceIndicator);
-
-    // Role/type indicator at bottom
-    this.add(
-      scene.add
-        .text(this.width / 2, 73, troopClass.NAME.replace("Troop", ""), {
-          fontSize: "7px",
-          fontFamily: "Arial, sans-serif",
-          color: "#888899"
-        })
-        .setOrigin(0.5, 0.5)
-    );
 
     // Start live price update timer
     if (coinSymbol) {
@@ -101,13 +101,21 @@ class Card extends Phaser.GameObjects.Container {
     if (!this.coinSymbol || !this.priceIndicator || !this.scene) return;
 
     const tokenData = priceService.getTokenWithPower(this.coinSymbol);
-    if (tokenData && tokenData.emaPrice) {
-      const pct = ((tokenData.price - tokenData.emaPrice) / tokenData.emaPrice) * 100;
+    if (!tokenData) return;
+
+    let pct = null;
+    if (tokenData.emaPrice) {
+      // Pyth coins: real-time EMA momentum
+      pct = ((tokenData.price - tokenData.emaPrice) / tokenData.emaPrice) * 100;
+    } else if (tokenData.change7d !== undefined) {
+      // Railway coins: 7-day change
+      pct = tokenData.change7d;
+    }
+
+    if (pct !== null) {
       const arrow = pct >= 0 ? "▲" : "▼";
       const color = pct >= 0 ? "#00ff44" : "#ff4444";
-      // Show arrow + boost type (ATK for pumping, DEF for dumping)
-      const boost = pct >= 0 ? "ATK" : "DEF";
-      this.priceIndicator.setText(`${arrow}${boost}`);
+      this.priceIndicator.setText(`${arrow} ${Math.abs(pct).toFixed(1)}%`);
       this.priceIndicator.setColor(color);
     }
   }

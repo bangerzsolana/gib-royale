@@ -18,10 +18,23 @@ class CardArea extends Phaser.GameObjects.Container {
       scene.add.rectangle(0, 0, width, 2, 0x333355).setOrigin(0, 0)
     );
 
-    this.deck = new Deck(scene, 5, 15, 50, 50);
+    // "Next" card preview on the left (small)
+    this.deck = new Deck(scene, 4, 18, 36, 48);
     this.add(this.deck);
 
-    this.hand = new Hand(scene, this.deck, 10, 10, width - 20, 100);
+    // "NEXT" label above deck preview
+    this.add(
+      scene.add
+        .text(22, 8, "NEXT", {
+          fontSize: "6px",
+          fontFamily: "Arial, sans-serif",
+          color: "#888899"
+        })
+        .setOrigin(0.5, 0.5)
+    );
+
+    // Hand starts after deck area to avoid overlap
+    this.hand = new Hand(scene, this.deck, 46, 10, width - 50, 100);
     this.add(this.hand);
   }
 

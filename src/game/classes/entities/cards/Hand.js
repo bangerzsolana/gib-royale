@@ -12,8 +12,8 @@ class Hand extends Phaser.GameObjects.Container {
 
     // 4 card slots evenly spaced
     const slotWidth = 72;
-    const slotSpacing = 82;
-    const startX = (width - slotSpacing * 4) / 2 + 4;
+    const slotSpacing = 75;
+    const startX = (width - slotSpacing * 3 - slotWidth) / 2;
 
     this.slots = [
       new CardSlot(scene, this, startX, 5),

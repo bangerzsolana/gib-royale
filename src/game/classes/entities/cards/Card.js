@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { priceService } from "../../../services/PriceService.js";
 
 class Card extends Phaser.GameObjects.Container {
   constructor(scene, x, y, troopClass, coinSymbol) {
@@ -63,6 +64,17 @@ class Card extends Phaser.GameObjects.Container {
         .setOrigin(0.5, 0.5)
     );
 
+    // Live price indicator (top-right corner) — shows ▲/▼ with % change
+    this.priceIndicator = scene.add
+      .text(this.width - 4, 4, "", {
+        fontSize: "8px",
+        fontFamily: "Arial, sans-serif",
+        fontStyle: "bold",
+        color: "#00ff00"
+      })
+      .setOrigin(1, 0);
+    this.add(this.priceIndicator);
+
     // Role/type indicator at bottom
     this.add(
       scene.add
@@ -73,9 +85,33 @@ class Card extends Phaser.GameObjects.Container {
         })
         .setOrigin(0.5, 0.5)
     );
+
+    // Start live price update timer
+    if (coinSymbol) {
+      this.updatePriceIndicator();
+      this.priceTimer = scene.time.addEvent({
+        delay: 3000,
+        callback: () => this.updatePriceIndicator(),
+        loop: true
+      });
+    }
+  }
+
+  updatePriceIndicator() {
+    if (!this.coinSymbol || !this.priceIndicator || !this.scene) return;
+
+    const tokenData = priceService.getTokenWithPower(this.coinSymbol);
+    if (tokenData && tokenData.emaPrice) {
+      const pct = ((tokenData.price - tokenData.emaPrice) / tokenData.emaPrice) * 100;
+      const arrow = pct >= 0 ? "▲" : "▼";
+      const color = pct >= 0 ? "#00ff44" : "#ff4444";
+      this.priceIndicator.setText(`${arrow}${Math.abs(pct).toFixed(1)}%`);
+      this.priceIndicator.setColor(color);
+    }
   }
 
   destroy() {
+    if (this.priceTimer) this.priceTimer.destroy();
     super.destroy();
   }
 }

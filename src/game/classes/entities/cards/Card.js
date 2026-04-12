@@ -64,15 +64,15 @@ class Card extends Phaser.GameObjects.Container {
         .setOrigin(0.5, 0.5)
     );
 
-    // Live price indicator (top-right corner) — shows ▲/▼ with % change
+    // Live price indicator (top-left, below mana cost) — shows ▲/▼ with % change
     this.priceIndicator = scene.add
-      .text(this.width - 4, 4, "", {
-        fontSize: "8px",
+      .text(10, 24, "", {
+        fontSize: "9px",
         fontFamily: "Arial, sans-serif",
         fontStyle: "bold",
         color: "#00ff00"
       })
-      .setOrigin(1, 0);
+      .setOrigin(0.5, 0.5);
     this.add(this.priceIndicator);
 
     // Role/type indicator at bottom
@@ -105,7 +105,9 @@ class Card extends Phaser.GameObjects.Container {
       const pct = ((tokenData.price - tokenData.emaPrice) / tokenData.emaPrice) * 100;
       const arrow = pct >= 0 ? "▲" : "▼";
       const color = pct >= 0 ? "#00ff44" : "#ff4444";
-      this.priceIndicator.setText(`${arrow}${Math.abs(pct).toFixed(1)}%`);
+      // Show arrow + boost type (ATK for pumping, DEF for dumping)
+      const boost = pct >= 0 ? "ATK" : "DEF";
+      this.priceIndicator.setText(`${arrow}${boost}`);
       this.priceIndicator.setColor(color);
     }
   }

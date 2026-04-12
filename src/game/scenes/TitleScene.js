@@ -29,8 +29,29 @@ class TitleScene extends Scene {
       )
       .setOrigin(0.5, 0.5);
 
+    // Cards gallery button
+    const cardsBtn = this.add
+      .bitmapText(
+        centerX,
+        centerY + 35,
+        "teeny-tiny-pixls",
+        "[ CARDS ]",
+        5
+      )
+      .setOrigin(0.5, 0.5)
+      .setTint(0xffcc00)
+      .setInteractive();
+
+    let cardsBtnClicked = false;
+    cardsBtn.on("pointerdown", () => {
+      cardsBtnClicked = true;
+      this.scene.start("CardGalleryScene");
+    });
+
     this.input.on("pointerdown", () => {
-      this.nextScene();
+      if (!cardsBtnClicked) {
+        this.nextScene();
+      }
     });
   }
 

@@ -4,6 +4,7 @@ import TitleScene from "../scenes/TitleScene.js";
 import PlayScene from "../scenes/PlayScene.js";
 import UIScene from "../scenes/UIScene.js";
 import CreditsScene from "../scenes/CreditsScene.js";
+import CardGalleryScene from "../scenes/CardGalleryScene.js";
 import WinScene from "../scenes/WinScene.js";
 import LoseScene from "../scenes/LoseScene.js";
 
@@ -19,6 +20,7 @@ export var config = {
     PlayScene,
     UIScene,
     CreditsScene,
+    CardGalleryScene,
     WinScene,
     LoseScene
   ],

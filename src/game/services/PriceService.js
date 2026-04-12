@@ -25,9 +25,22 @@ const MOCK_TOKENS = {
   'tremp': { name: 'TREMP', price: 0.78, changePercent1h: -30.0 },
 };
 
+// EMA smoothing factor (0.1 = slow-moving average, reacts over ~10 ticks)
+const EMA_ALPHA = 0.1;
+// Scaling factor so power displays as nice numbers like +6.9 or -3.2
+const POWER_SCALE = 5000;
+
 class PriceService {
   constructor() {
-    this.tokens = { ...MOCK_TOKENS };
+    this.tokens = {};
+    // Deep copy and add EMA tracking
+    for (const [id, data] of Object.entries(MOCK_TOKENS)) {
+      this.tokens[id] = {
+        ...data,
+        emaPrice: data.price, // EMA starts at current price
+        confidence: data.price * 0.005, // Initial confidence ~0.5% of price
+      };
+    }
     this.listeners = [];
     this.isSimulating = false;
     this.pythApiKey = null;
@@ -98,6 +111,14 @@ class PriceService {
         // Update price accordingly
         token.price *= (1 + (drift + volatility) * 0.001);
 
+        // Update EMA (slow-moving average of price)
+        token.emaPrice += EMA_ALPHA * (token.price - token.emaPrice);
+
+        // Update confidence (simulates bid-ask spread / publisher disagreement)
+        // More volatile tokens get wider confidence intervals
+        const absChange = Math.abs(token.changePercent1h);
+        token.confidence = token.price * (0.002 + absChange * 0.0005);
+
         // Notify listeners
         this.listeners.forEach(fn => fn(id, token));
       }
@@ -117,6 +138,44 @@ class PriceService {
     return () => {
       this.listeners = this.listeners.filter(fn => fn !== callback);
     };
+  }
+
+  /**
+   * Calculate power score using Pyth-native formula:
+   * power = ((price - emaPrice) / emaPrice) × (confidence / price) × POWER_SCALE
+   *
+   * Positive power = pumping = attacker
+   * Negative power = dumping = defender
+   */
+  calcPower(tokenId) {
+    const token = this.tokens[tokenId];
+    if (!token || !token.emaPrice || token.emaPrice === 0) return 0;
+
+    const momentum = (token.price - token.emaPrice) / token.emaPrice;
+    const activity = token.confidence / token.price;
+    return parseFloat((momentum * activity * POWER_SCALE).toFixed(1));
+  }
+
+  /**
+   * Get full token data including power score
+   */
+  getTokenWithPower(tokenId) {
+    const token = this.tokens[tokenId];
+    if (!token) return null;
+    return {
+      id: tokenId,
+      ...token,
+      power: this.calcPower(tokenId),
+    };
+  }
+
+  /**
+   * Get all tokens with power scores, sorted by power descending
+   */
+  getAllTokensWithPower() {
+    return Object.keys(this.tokens)
+      .map(id => this.getTokenWithPower(id))
+      .sort((a, b) => b.power - a.power);
   }
 
   /**

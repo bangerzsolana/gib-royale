@@ -28,7 +28,8 @@ export default class ControlledPlayer extends Player {
       0,
       gameHeight - scene.cardHolderHeight,
       scene.cardHolderWidth,
-      scene.cardHolderHeight
+      scene.cardHolderHeight,
+      this.manaBank
     );
 
     // Handle the player clicking on the play area
@@ -36,6 +37,8 @@ export default class ControlledPlayer extends Player {
       .setInteractive({ useHandCursor: true })
       .on("pointerdown", pointer => {
         const playerCardHand = this.cardArea.hand;
+        if (!playerCardHand.selectedCardSlot || !playerCardHand.selectedCardSlot.card) return;
+
         const currentCard = playerCardHand.selectedCardSlot.card;
         const troopClass = currentCard.troopClass;
         const tokenId = currentCard.coinSymbol || null;

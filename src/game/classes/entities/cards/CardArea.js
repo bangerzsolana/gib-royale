@@ -3,7 +3,7 @@ import Deck from "./Deck.js";
 import Hand from "./Hand.js";
 
 class CardArea extends Phaser.GameObjects.Container {
-  constructor(scene, x, y, width, height) {
+  constructor(scene, x, y, width, height, manaBank) {
     super(scene, x, y);
 
     scene.add.existing(this).setDepth(10000);
@@ -34,7 +34,7 @@ class CardArea extends Phaser.GameObjects.Container {
     );
 
     // Hand starts after deck area to avoid overlap
-    this.hand = new Hand(scene, this.deck, 46, 10, width - 50, 100);
+    this.hand = new Hand(scene, this.deck, 46, 10, width - 50, 100, manaBank);
     this.add(this.hand);
   }
 

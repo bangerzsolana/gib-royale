@@ -2,10 +2,11 @@ import Phaser from "phaser";
 import CardSlot from "./CardSlot.js";
 
 class Hand extends Phaser.GameObjects.Container {
-  constructor(scene, cardSource, x, y, width, height) {
+  constructor(scene, cardSource, x, y, width, height, manaBank) {
     super(scene, x, y);
 
     this.cardSource = cardSource;
+    this.manaBank = manaBank;
     this.selectedCardSlot = null;
 
     scene.add.existing(this).setDepth(10000);
@@ -30,13 +31,36 @@ class Hand extends Phaser.GameObjects.Container {
       const thisSlot = this.slots[i];
       thisSlot.insertCard(this.cardSource.drawCard());
     }
+
+    // Check affordability every 200ms
+    scene.time.addEvent({
+      delay: 200,
+      loop: true,
+      callback: () => this.updateAffordability()
+    });
+    this.updateAffordability();
+  }
+
+  updateAffordability() {
+    if (!this.manaBank) return;
+    const mana = this.manaBank.getManaAmount();
+    for (const slot of this.slots) {
+      if (slot.card) {
+        const cost = slot.card.troopClass.COST;
+        slot.updateAffordability(mana >= cost);
+      }
+    }
   }
 
   deselectAll() {
-    this.selectedCard = null;
+    this.selectedCardSlot = null;
     this.slots.forEach(slot => {
       slot.deselect();
     });
+    // Hide spawn overlay when nothing selected
+    if (this.scene && this.scene.opponent) {
+      this.scene.opponent.spawnZoneOverlay.setAlpha(0);
+    }
   }
 
   setSelectedCardSlot(cardSlot) {

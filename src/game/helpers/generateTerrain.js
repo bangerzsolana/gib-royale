@@ -14,23 +14,54 @@ function genTerrain(scene) {
     .setOrigin(0.5, 0.5);
 
   // Create the river in the middle of the playing field
+  // Split into 3 segments with gaps at bridge locations so troops can cross
   scene.river = scene.add.group();
 
-  // Main river body
+  const bridgeWidth = 50;
+  const riverY = worldHeight / 2;
+  const riverHeight = 20;
+  const leftBridgeX = worldWidth * 0.2;   // 72
+  const rightBridgeX = worldWidth * 0.8;  // 288
+
+  // Left segment (before left bridge)
+  const leftEnd = leftBridgeX - bridgeWidth / 2;
+  if (leftEnd > 0) {
+    scene.river.add(
+      scene.physics.add
+        .existing(
+          scene.add.rectangle(leftEnd / 2, riverY, leftEnd, riverHeight, 0x3366cc),
+          true
+        )
+        .setOrigin(0.5, 0.5)
+    );
+  }
+
+  // Middle segment (between bridges)
+  const midStart = leftBridgeX + bridgeWidth / 2;
+  const midEnd = rightBridgeX - bridgeWidth / 2;
+  const midWidth = midEnd - midStart;
   scene.river.add(
     scene.physics.add
       .existing(
-        scene.add.rectangle(
-          worldWidth / 2,
-          worldHeight / 2,
-          worldWidth,
-          20,
-          0x3366cc
-        ),
+        scene.add.rectangle(midStart + midWidth / 2, riverY, midWidth, riverHeight, 0x3366cc),
         true
       )
       .setOrigin(0.5, 0.5)
   );
+
+  // Right segment (after right bridge)
+  const rightStart = rightBridgeX + bridgeWidth / 2;
+  const rightWidth = worldWidth - rightStart;
+  if (rightWidth > 0) {
+    scene.river.add(
+      scene.physics.add
+        .existing(
+          scene.add.rectangle(rightStart + rightWidth / 2, riverY, rightWidth, riverHeight, 0x3366cc),
+          true
+        )
+        .setOrigin(0.5, 0.5)
+    );
+  }
 
   // Bridge left
   scene.add

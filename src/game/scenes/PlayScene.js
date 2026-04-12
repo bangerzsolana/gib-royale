@@ -79,29 +79,14 @@ export default class PlayScene extends Scene {
 
       genTerrain(this);
 
-      // Troop colliders
+      // Troop colliders - enemy troops collide with each other
+      // Same-team troops pass through each other (like Clash Royale)
       this.physics.add.collider(
         this.player.walkingTroops,
         this.opponent.walkingTroops
       );
       this.physics.add.collider(
-        this.player.walkingTroops,
-        this.player.walkingTroops
-      );
-      this.physics.add.collider(
-        this.opponent.walkingTroops,
-        this.opponent.walkingTroops
-      );
-      this.physics.add.collider(
         this.player.flyingTroops,
-        this.opponent.flyingTroops
-      );
-      this.physics.add.collider(
-        this.player.flyingTroops,
-        this.player.flyingTroops
-      );
-      this.physics.add.collider(
-        this.opponent.flyingTroops,
         this.opponent.flyingTroops
       );
 

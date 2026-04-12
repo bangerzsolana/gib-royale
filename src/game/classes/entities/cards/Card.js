@@ -77,11 +77,11 @@ class Card extends Phaser.GameObjects.Container {
 
     // Live price indicator — prominent, below role name
     this.priceIndicator = scene.add
-      .text(this.width / 2, 78, "", {
-        fontSize: "9px",
+      .text(this.width / 2, 76, "—", {
+        fontSize: "10px",
         fontFamily: "Arial, sans-serif",
         fontStyle: "bold",
-        color: "#00ff00"
+        color: "#666688"
       })
       .setOrigin(0.5, 0.5);
     this.add(this.priceIndicator);
@@ -103,21 +103,12 @@ class Card extends Phaser.GameObjects.Container {
     const tokenData = priceService.getTokenWithPower(this.coinSymbol);
     if (!tokenData) return;
 
-    let pct = null;
-    if (tokenData.emaPrice) {
-      // Pyth coins: real-time EMA momentum
-      pct = ((tokenData.price - tokenData.emaPrice) / tokenData.emaPrice) * 100;
-    } else if (tokenData.change7d !== undefined) {
-      // Railway coins: 7-day change
-      pct = tokenData.change7d;
-    }
-
-    if (pct !== null) {
-      const arrow = pct >= 0 ? "▲" : "▼";
-      const color = pct >= 0 ? "#00ff44" : "#ff4444";
-      this.priceIndicator.setText(`${arrow} ${Math.abs(pct).toFixed(1)}%`);
-      this.priceIndicator.setColor(color);
-    }
+    const power = tokenData.power || 0;
+    const arrow = power >= 0 ? "▲" : "▼";
+    const color = power >= 0 ? "#00ff44" : "#ff4444";
+    const label = power >= 0 ? "ATK" : "DEF";
+    this.priceIndicator.setText(`${arrow}${label} ${Math.abs(power).toFixed(1)}`);
+    this.priceIndicator.setColor(color);
   }
 
   destroy() {

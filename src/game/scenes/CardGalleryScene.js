@@ -10,11 +10,11 @@ const GAP_Y = 2;
 const TOP_Y = 18;
 const LEFT_X = 2;
 
-// Style for number text (regular Phaser text since bitmap font has no digits)
+// Style for number text — Inter font at high resolution for crisp rendering
 const NUM_STYLE = {
-  fontFamily: "monospace",
+  fontFamily: "'Inter', sans-serif",
   fontSize: "7px",
-  resolution: 2,
+  resolution: 8,
 };
 
 class CardGalleryScene extends Scene {
@@ -101,9 +101,9 @@ class CardGalleryScene extends Scene {
     // Power score (regular text so digits render)
     const powerStr = (power >= 0 ? "+" : "") + power.toFixed(1);
     const powerText = this.add
-      .text(x + CARD_W / 2, y + 16, powerStr, {
+      .text(x + CARD_W / 2, y + 15, powerStr, {
         ...NUM_STYLE,
-        fontSize: "9px",
+        fontSize: "10px",
         color: power >= 0 ? "#44ff44" : "#ff4444",
         fontStyle: "bold",
       })

@@ -259,15 +259,93 @@ class PriceService {
   }
 
   /**
+   * Fetch market cap data for ALL coins (Pyth + non-Pyth) from Railway API.
+   * Market cap is used for movement speed: heavier (higher cap) = slower.
+   */
+  async fetchAllMarketCaps() {
+    try {
+      const allSymbols = [
+        ...this.coins.map(c => c.symbol),
+        ...this.nonPythCoins,
+      ];
+      // Batch into chunks of 40 to avoid URL length limits
+      const BATCH_SIZE = 40;
+      const batches = [];
+      for (let i = 0; i < allSymbols.length; i += BATCH_SIZE) {
+        batches.push(allSymbols.slice(i, i + BATCH_SIZE));
+      }
+
+      const results = await Promise.all(batches.map(async (batch) => {
+        const tickers = batch.map(s => `$${s}`).join(',');
+        const resp = await fetch(`${RAILWAY_API_URL}?tickers=${tickers}`);
+        if (!resp.ok) throw new Error(`Railway API error: ${resp.status}`);
+        return resp.json();
+      }));
+
+      for (const data of results) {
+        const rows = Array.isArray(data) ? data : (data.data || []);
+        for (const row of rows) {
+          const symbol = (row.ticker || '').replace(/^\$/, '');
+          if (!symbol) continue;
+          // Merge market cap into existing token data (don't overwrite Pyth prices)
+          if (this.tokens[symbol]) {
+            this.tokens[symbol].marketCap = row.market_cap || 0;
+          } else {
+            // Token not yet fetched — store minimal data
+            this.tokens[symbol] = {
+              name: symbol,
+              price: row.price || 0,
+              marketCap: row.market_cap || 0,
+              source: 'railway',
+            };
+          }
+        }
+      }
+      return true;
+    } catch (err) {
+      console.error('PriceService market cap fetch error:', err);
+      return false;
+    }
+  }
+
+  /**
+   * Get market cap for a coin. Returns 0 if unavailable.
+   */
+  getMarketCap(symbol) {
+    return (this.tokens[symbol] && this.tokens[symbol].marketCap) || 0;
+  }
+
+  /**
+   * Calculate speed multiplier from market cap.
+   * Higher market cap = heavier = slower.
+   *
+   * Uses log10 scale:
+   *   $100K cap → 1.4x (zippy micro-cap)
+   *   $1B cap   → 1.0x (baseline)
+   *   $100B cap → 0.6x (heavy mega-cap)
+   */
+  getSpeedMultiplier(symbol) {
+    const cap = this.getMarketCap(symbol);
+    if (!cap || cap <= 0) return 1; // No data → normal speed
+
+    const logCap = Math.log10(cap);
+    // Clamp between 5 (100K) and 11 (100B)
+    const normalized = Math.max(0, Math.min(1, (logCap - 5) / 6));
+    // 1.4 at low cap, 0.6 at high cap
+    return 1.4 - (normalized * 0.8);
+  }
+
+  /**
    * Start polling Pyth every N seconds
    */
   startPolling(intervalMs = 3000) {
     if (this.isPolling) return;
     this.isPolling = true;
 
-    // Fetch immediately — Pyth (real-time) + Railway (5-min refresh)
+    // Fetch immediately — Pyth (real-time) + Railway (5-min refresh) + market caps
     this.fetchPrices();
     this.fetchRailwayPrices();
+    this.fetchAllMarketCaps();
 
     // Pyth polls frequently; Railway less often (data only updates every 5 min)
     this._pollInterval = setInterval(() => {
@@ -276,6 +354,7 @@ class PriceService {
 
     this._railwayPollInterval = setInterval(() => {
       this.fetchRailwayPrices();
+      this.fetchAllMarketCaps(); // Refresh market caps alongside Railway data
     }, 5 * 60 * 1000); // 5 minutes
   }
 

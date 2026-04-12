@@ -16,10 +16,12 @@ class HasPriceData {
       priceChangePercent: 0,
       baseDamage: 10,
       baseHealth: 100,
+      baseMovementSpeed: 0, // Set at spawn from troop's hardcoded speed
       lastPriceUpdate: 0,
       priceUpdateInterval: 2000, // Update stats every 2 seconds
       damageMultiplier: 1,
       defenseMultiplier: 1,
+      speedMultiplier: 1, // Market-cap-based: heavy coins move slower
       isRugged: false,
       isMooning: false,
       priceIndicator: null
@@ -180,6 +182,29 @@ HasPriceData.methods = {
     // Store base stats at spawn time
     if (this.damageAmount) this.baseDamage = this.damageAmount;
     if (this.overallHealth) this.baseHealth = this.overallHealth;
+    if (this.movementSpeed) this.baseMovementSpeed = this.movementSpeed;
+
+    // Apply market-cap speed modifier immediately if data is available
+    if (this.tokenId) {
+      this.applySpeedFromMarketCap();
+    }
+  },
+
+  /**
+   * Adjust movement speed based on market cap.
+   * Higher market cap = heavier = slower movement.
+   */
+  applySpeedFromMarketCap() {
+    const mult = priceService.getSpeedMultiplier(this.tokenId);
+    if (mult !== this.speedMultiplier && this.baseMovementSpeed) {
+      this.speedMultiplier = mult;
+      const newSpeed = Math.round(this.baseMovementSpeed * this.speedMultiplier);
+      if (this.setMovementSpeed) {
+        this.setMovementSpeed(newSpeed);
+        // Also update max velocity to match
+        if (this.setMaxVelocity) this.setMaxVelocity(newSpeed, newSpeed);
+      }
+    }
   },
 
   _preUpdate(time, delta) {
@@ -196,6 +221,9 @@ HasPriceData.methods = {
         this.priceChangePercent = momentum;
         this.recalculateStats();
         this.updatePriceIndicator();
+
+        // Update speed from market cap (data may arrive after spawn)
+        this.applySpeedFromMarketCap();
       }
     }
 

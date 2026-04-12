@@ -1,0 +1,116 @@
+import Phaser from "phaser";
+import Tower from "../entities/environment/Tower.js";
+import Walkers from "../entities/troops/walkers/index.js";
+
+// Dynamically populate the card types from our Troop classes
+const cardTypes = [];
+for (const troopClass of Object.values(Walkers)) {
+  cardTypes.push({
+    name: troopClass.NAME,
+    cost: troopClass.COST,
+    doSpawn: troopClass.doSpawn
+  });
+}
+
+class Player {
+  constructor(
+    scene,
+    spawnZoneX,
+    spawnZoneY,
+    towerX,
+    towerY,
+    troopVelocityDirection,
+    opponent
+  ) {
+    this.scene = scene;
+
+    const worldWidth = scene.physics.world.bounds.width;
+    const worldHeight = scene.physics.world.bounds.height;
+    const halfWorldWidth = worldWidth / 2;
+    const halfWorldHeight = worldHeight / 2;
+
+    this.troopVelocityDirection = troopVelocityDirection;
+    this.opponent = opponent;
+
+    this.troops = scene.physics.add.group();
+    this.aggroAreas = scene.physics.add.group();
+
+    this.walkingTroops = scene.physics.add.group();
+    this.flyingTroops = scene.physics.add.group();
+    this.attentionAreas = scene.physics.add.group();
+
+    this.towers = scene.physics.add.staticGroup();
+    this.towers.addMultiple([
+      new Tower(scene, this, towerX, towerY),
+      new Tower(
+        scene,
+        this,
+        towerX - 50,
+        towerY + 20 * this.troopVelocityDirection
+      ),
+      new Tower(
+        scene,
+        this,
+        towerX + 50,
+        towerY + 20 * this.troopVelocityDirection
+      )
+    ]);
+
+    this.spawnZone = scene.add
+      .zone(spawnZoneX, spawnZoneY, worldWidth, halfWorldHeight, 0xff0000, 0)
+      .setOrigin(0, 0);
+
+    this.spawnZoneOverlay = scene.add
+      .rectangle(
+        spawnZoneX,
+        spawnZoneY,
+        worldWidth,
+        halfWorldHeight,
+        0xff0000,
+        1
+      )
+      .setOrigin(0, 0)
+      .setDepth(20000)
+      .setAlpha(0);
+  }
+
+  setOpponent(opponent) {
+    this.opponent = opponent;
+    return this;
+  }
+
+  spawnTroop(x, y, velocityDirection, troopClass) {
+    try {
+      if (!Phaser.Geom.Rectangle.Contains(this.spawnZone, x, y)) return;
+
+      let CardType = cardTypes[parseInt(Math.random() * cardTypes.length, 0)];
+
+      if (troopClass) {
+        CardType = {
+          name: troopClass.NAME,
+          cost: troopClass.COST,
+          doSpawn: troopClass.doSpawn
+        };
+      }
+
+      if (this.manaBank.getManaAmount() < CardType.cost) return false;
+
+      CardType.doSpawn({
+        scene: this.scene,
+        owner: this,
+        x,
+        y,
+        velocityDirection
+      });
+
+      this.manaBank.deductMana(CardType.cost);
+      return true;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  destroy() {}
+}
+
+export default Player;

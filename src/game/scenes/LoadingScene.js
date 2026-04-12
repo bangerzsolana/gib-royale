@@ -10,101 +10,21 @@ export default class LoadingScene extends Scene {
   }
 
   preload() {
-    this.load.bitmapFont(
-      "teeny-tiny-pixls",
-      "assets/fonts/teeny-tiny-pixls.png",
-      "assets/fonts/teeny-tiny-pixls.fnt"
-    );
+    // Generate circle texture for troops (white circle, tinted per-coin)
+    let circleGfx = this.add.graphics();
+    circleGfx.fillStyle(0xffffff, 1);
+    circleGfx.fillCircle(14, 14, 14);
+    circleGfx.generateTexture("circle-troop", 28, 28);
+    circleGfx.destroy();
 
-    this.load.image("background", "assets/background.png");
-    this.load.image("tower", "assets/tower.png");
-    this.load.image("bridge", "assets/bridge.png");
-    this.load.image("building-outer", "assets/building-outer.png");
-    this.load.image("rock", "assets/rock.png");
-    this.load.image("grass", "assets/grass.png");
-    this.load.image("sapling", "assets/sapling.png");
-    this.load.image("tree", "assets/tree.png");
-    this.load.image("tree-trunk", "assets/tree-trunk.png");
-    this.load.spritesheet("character", "assets/character.png", {
-      frameWidth: 16,
-      frameHeight: 19
-    });
-    this.load.spritesheet("npc", "assets/npc.png", {
-      frameWidth: 16,
-      frameHeight: 19
-    });
-    this.load.spritesheet("troop--evil", "assets/troop--evil.png", {
-      frameWidth: 16,
-      frameHeight: 19
-    });
-    this.load.spritesheet("troop--lil-demon", "assets/troop--lil-demon.png", {
-      frameWidth: 16,
-      frameHeight: 19
-    });
-    this.load.spritesheet(
-      "troop--battle-otter",
-      "assets/troop--battle-otter.png",
-      { frameWidth: 16, frameHeight: 19 }
-    );
-    this.load.spritesheet("troop--baby-cow", "assets/troop--baby-cow.png", {
-      frameWidth: 16,
-      frameHeight: 19
-    });
-    this.load.spritesheet("troop--alien", "assets/troop--alien.png", {
-      frameWidth: 16,
-      frameHeight: 19
-    });
-    this.load.spritesheet(
-      "troop--magic-puppy",
-      "assets/troop--magic-puppy.png",
-      { frameWidth: 16, frameHeight: 19 }
-    );
-    this.load.spritesheet("troop--quacker", "assets/troop--quacker.png", {
-      frameWidth: 16,
-      frameHeight: 19
-    });
-    this.load.spritesheet("troop--z-dog", "assets/troop--z-dog.png", {
-      frameWidth: 18,
-      frameHeight: 19
-    });
-    this.load.spritesheet("troop--clown-guy", "assets/troop--clown-guy.png", {
-      frameWidth: 16,
-      frameHeight: 19
-    });
-    this.load.spritesheet("troop--clown-lady", "assets/troop--clown-lady.png", {
-      frameWidth: 16,
-      frameHeight: 20
-    });
-    this.load.spritesheet("troop--witch", "assets/troop--witch.png", {
-      frameWidth: 16,
-      frameHeight: 19
-    });
-    this.load.spritesheet("troop--mama-cow", "assets/troop--mama-cow.png", {
-      frameWidth: 26,
-      frameHeight: 19
-    });
-    this.load.spritesheet("troop--volcano", "assets/troop--volcano.png", {
-      frameWidth: 26,
-      frameHeight: 19
-    });
-    this.load.spritesheet("troop--dino", "assets/troop--dino.png", {
-      frameWidth: 16,
-      frameHeight: 19
-    });
-    this.load.spritesheet("troop--chickphin", "assets/troop--chickphin.png", {
-      frameWidth: 16,
-      frameHeight: 20
-    });
-    this.load.spritesheet("troop--tank", "assets/troop--tank.png", {
-      frameWidth: 34,
-      frameHeight: 20
-    });
-    this.load.spritesheet("rainSplash", "assets/rainSplash.png", {
-      frameWidth: 16,
-      frameHeight: 16
-    });
+    // Generate rectangle texture for towers
+    let towerGfx = this.add.graphics();
+    towerGfx.fillStyle(0xffffff, 1);
+    towerGfx.fillRect(0, 0, 36, 44);
+    towerGfx.generateTexture("rect-tower", 36, 44);
+    towerGfx.destroy();
 
-    // Create waypoint texture
+    // Generate waypoint texture
     let circle = this.add.graphics();
     circle.fillStyle(0xffffff, 1);
     circle.fillCircle(10, 10, 10);
@@ -114,8 +34,8 @@ export default class LoadingScene extends Scene {
     // Generate particle texture
     let particleRect = this.add.graphics();
     particleRect.fillStyle(0xffffff, 1);
-    particleRect.fillRect(-2, -2, 4, 4);
-    particleRect.generateTexture("particle-rect");
+    particleRect.fillRect(0, 0, 6, 6);
+    particleRect.generateTexture("particle-rect", 6, 6);
     particleRect.destroy();
   }
 
@@ -124,22 +44,29 @@ export default class LoadingScene extends Scene {
     let centerY = this.cameras.main.centerY;
 
     this.add
-      .bitmapText(centerX, centerY - 24, "teeny-tiny-pixls", "Loading", 10)
+      .text(centerX, centerY - 24, "Loading...", {
+        fontSize: "20px",
+        fontFamily: "Arial, sans-serif",
+        color: "#ffffff"
+      })
       .setOrigin(0.5, 0.5);
+
+    // Brief delay then proceed
+    this.time.delayedCall(100, () => this.nextScene());
   }
 
   init() {
     let centerX = this.cameras.main.centerX;
     let centerY = this.cameras.main.centerY;
-    let barWidth = this.cameras.main.width - 24;
-    let barHeight = 25;
+    let barWidth = this.cameras.main.width - 60;
+    let barHeight = 16;
 
     var progressBox = this.add.rectangle(
       centerX,
       centerY,
       barWidth,
       barHeight,
-      0x000000
+      0x333333
     );
     var progressBar = this.add
       .rectangle(
@@ -147,7 +74,7 @@ export default class LoadingScene extends Scene {
         centerY,
         barWidth,
         barHeight,
-        0xffffff
+        0x4488ff
       )
       .setOrigin(0, 0.5)
       .setScale(0, 1);
@@ -157,7 +84,6 @@ export default class LoadingScene extends Scene {
     });
 
     this.load.on("complete", () => {
-      this.nextScene();
       this.loadingProgressComplete = true;
     });
   }

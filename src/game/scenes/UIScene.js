@@ -6,30 +6,38 @@ class UIScene extends Scene {
   }
 
   create() {
-    let centerX = this.cameras.main.centerX;
-    let centerY = this.cameras.main.centerY;
-    let sceneWidth = this.cameras.main.width;
-
-    // Create menu button
+    // Menu button (top-left)
     let menuButton = this.add
-      .bitmapText(5, 5, "teeny-tiny-pixls", "MENU", 5)
-      .setTint(0x000)
+      .text(10, 10, "MENU", {
+        fontSize: "12px",
+        fontFamily: "Arial, sans-serif",
+        fontStyle: "bold",
+        color: "#ffffff",
+        backgroundColor: "#00000066",
+        padding: { x: 6, y: 4 }
+      })
       .setOrigin(0, 0)
-      .setInteractive()
+      .setInteractive({ useHandCursor: true })
       .on("pointerdown", () => {
         uiMenuContainer.setVisible(!uiMenuContainer.visible);
       });
 
     let uiMenuContainer = this.add
-      .container(menuButton.x + 5, menuButton.y + menuButton.height + 5)
+      .container(menuButton.x, menuButton.y + menuButton.height + 4)
       .setVisible(false);
 
-    // RESTART menu item
+    // RESTART
     uiMenuContainer.add(
       this.add
-        .bitmapText(0, 0, "teeny-tiny-pixls", "RESTART", 5)
-        .setTint(0x000)
-        .setInteractive()
+        .text(0, 0, "RESTART", {
+          fontSize: "12px",
+          fontFamily: "Arial, sans-serif",
+          fontStyle: "bold",
+          color: "#ffcc00",
+          backgroundColor: "#00000088",
+          padding: { x: 6, y: 4 }
+        })
+        .setInteractive({ useHandCursor: true })
         .on("pointerdown", () => {
           let sceneManager = this.scene.manager;
           sceneManager.getScenes().forEach(function(scene) {
@@ -41,12 +49,18 @@ class UIScene extends Scene {
         .setOrigin(0, 0)
     );
 
-    // CREDITS menu item
+    // CREDITS
     uiMenuContainer.add(
       this.add
-        .bitmapText(0, 10, "teeny-tiny-pixls", "CREDITS", 5)
-        .setTint(0x000)
-        .setInteractive()
+        .text(0, 28, "CREDITS", {
+          fontSize: "12px",
+          fontFamily: "Arial, sans-serif",
+          fontStyle: "bold",
+          color: "#ffcc00",
+          backgroundColor: "#00000088",
+          padding: { x: 6, y: 4 }
+        })
+        .setInteractive({ useHandCursor: true })
         .on("pointerdown", () => {
           uiMenuContainer.setVisible(false);
           this.scene.manager.start("CreditsScene");

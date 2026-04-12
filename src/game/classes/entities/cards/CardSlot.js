@@ -5,8 +5,8 @@ class CardSlot extends Phaser.GameObjects.Container {
     super(scene, x, y);
 
     this.hand = hand;
-    this.width = 27;
-    this.height = 27;
+    this.width = 72;
+    this.height = 90;
     this.originalY = y;
 
     this.card = null;
@@ -14,10 +14,11 @@ class CardSlot extends Phaser.GameObjects.Container {
 
     scene.add.existing(this).setDepth(10000);
 
-    // Add background
+    // Slot background
     this.background = scene.add
-      .rectangle(0, 0, this.width, this.height, 0x000000)
-      .setOrigin(0, 0);
+      .rectangle(0, 0, this.width, this.height, 0x222244)
+      .setOrigin(0, 0)
+      .setStrokeStyle(1, 0x444466);
     this.add(this.background);
 
     // Make interactive
@@ -31,7 +32,7 @@ class CardSlot extends Phaser.GameObjects.Container {
   insertCard(card) {
     if (this.card) this.removeCard();
     this.card = card;
-    this.card.setPosition(1, 1);
+    this.card.setPosition(2, 2);
     this.add(card);
   }
 
@@ -45,15 +46,17 @@ class CardSlot extends Phaser.GameObjects.Container {
   select() {
     this.hand.deselectAll();
     this.isSelected = true;
-    this.y = 1;
-    this.background.setFillStyle(0xffff00);
+    this.y = this.originalY - 8;
+    this.background.setFillStyle(0x445588);
+    this.background.setStrokeStyle(2, 0x6688cc);
     this.hand.setSelectedCardSlot(this);
   }
 
   deselect() {
     this.isSelected = false;
     this.y = this.originalY;
-    this.background.setFillStyle(0x0077bb);
+    this.background.setFillStyle(0x222244);
+    this.background.setStrokeStyle(1, 0x444466);
   }
 
   destroy() {

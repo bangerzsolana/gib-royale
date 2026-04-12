@@ -45,14 +45,14 @@ class Player {
       new Tower(
         scene,
         this,
-        towerX - 50,
-        towerY + 20 * this.troopVelocityDirection
+        towerX - 110,
+        towerY + 35 * this.troopVelocityDirection
       ),
       new Tower(
         scene,
         this,
-        towerX + 50,
-        towerY + 20 * this.troopVelocityDirection
+        towerX + 110,
+        towerY + 35 * this.troopVelocityDirection
       )
     ]);
 

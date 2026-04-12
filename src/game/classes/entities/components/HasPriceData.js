@@ -157,8 +157,12 @@ HasPriceData.methods = {
     if (!this.priceIndicator) {
       this.priceIndicator = this.scene.add
         .text(this.x, this.y - this.height - 8, "", {
-          fontSize: "6px",
-          color: "#00ff00"
+          fontSize: "9px",
+          fontFamily: "Arial, sans-serif",
+          fontStyle: "bold",
+          color: "#00ff00",
+          stroke: "#000000",
+          strokeThickness: 2
         })
         .setOrigin(0.5, 0.5)
         .setDepth(999998);
@@ -196,7 +200,7 @@ HasPriceData.methods = {
 
     // Keep price indicator following the troop
     if (this.priceIndicator && !this.isDestroyed) {
-      this.priceIndicator.setPosition(this.x, this.y - this.height - 8);
+      this.priceIndicator.setPosition(this.x, this.y - this.height / 2 - 22);
     }
 
     // Apply defense multiplier: reduce incoming damage

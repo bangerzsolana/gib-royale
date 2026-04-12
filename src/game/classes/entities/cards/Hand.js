@@ -10,17 +10,16 @@ class Hand extends Phaser.GameObjects.Container {
 
     scene.add.existing(this).setDepth(10000);
 
-    // Add background
-    this.add(
-      scene.add.rectangle(0, 0, width, height, 0xdddddd).setOrigin(0, 0)
-    );
+    // 4 card slots evenly spaced
+    const slotWidth = 72;
+    const slotSpacing = 82;
+    const startX = (width - slotSpacing * 4) / 2 + 4;
 
-    // Add card slots
     this.slots = [
-      new CardSlot(scene, this, 2, 5),
-      new CardSlot(scene, this, 32, 5),
-      new CardSlot(scene, this, 62, 5),
-      new CardSlot(scene, this, 92, 5)
+      new CardSlot(scene, this, startX, 5),
+      new CardSlot(scene, this, startX + slotSpacing, 5),
+      new CardSlot(scene, this, startX + slotSpacing * 2, 5),
+      new CardSlot(scene, this, startX + slotSpacing * 3, 5)
     ];
     for (let i = 0; i < this.slots.length; i++) {
       this.add(this.slots[i]);

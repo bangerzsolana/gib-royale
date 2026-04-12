@@ -8,8 +8,15 @@ class Deck extends Phaser.GameObjects.Container {
 
     scene.add
       .existing(this)
-      .setDepth(10000)
-      .setScale(0.9);
+      .setDepth(10000);
+
+    // Build a lookup for Card.js to use for coin colors
+    if (!scene.game.__coinDeckLookup) {
+      scene.game.__coinDeckLookup = {};
+      for (const entry of COIN_DECK) {
+        scene.game.__coinDeckLookup[entry.symbol] = entry;
+      }
+    }
 
     this.populate();
     this.shuffle();

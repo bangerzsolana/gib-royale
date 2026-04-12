@@ -5,8 +5,6 @@ import ComputerPlayer from "../classes/player/ComputerPlayer.js";
 
 import Components from "../classes/entities/components/index.js";
 
-import WeatherSystem from "../weather/index.js";
-
 import genAnims from "../helpers/generateAnimations.js";
 import genTerrain from "../helpers/generateTerrain.js";
 
@@ -22,41 +20,33 @@ export default class PlayScene extends Scene {
       // Start UIScene overlay
       this.scene.run("UIScene");
 
-      // Generate sprite animations
+      // Generate animations (no-op with circle UI)
       genAnims(this);
 
       const gameWidth = this.game.config.width;
       const gameHeight = this.game.config.height;
-      const halfGameWidth = gameWidth / 2;
-      const halfGameHeight = gameHeight / 2;
 
       this.cardHolderWidth = gameWidth;
-      this.cardHolderHeight = 50;
+      this.cardHolderHeight = 120;
 
-      // Set physics world size
+      // Set physics world size (exclude card holder area)
       this.physics.world.setBounds(
         0,
         0,
-        this.game.config.width,
-        this.game.config.height - this.cardHolderHeight
+        gameWidth,
+        gameHeight - this.cardHolderHeight
       );
 
       this.camera = this.cameras.main;
-      this.camera.setBounds(
-        0,
-        0,
-        this.game.config.width,
-        this.game.config.height
-      );
+      this.camera.setBounds(0, 0, gameWidth, gameHeight);
 
       // Reset from previous rounds
       Components.HasDestructionParticles.particles = null;
 
-      // Create background
-      this.background = this.add
-        .sprite(halfGameWidth, halfGameHeight, "background")
-        .setOrigin(0.5, 0.5)
-        .setTint(0x228800);
+      // Create clean background (green field)
+      this.add
+        .rectangle(gameWidth / 2, (gameHeight - this.cardHolderHeight) / 2, gameWidth, gameHeight - this.cardHolderHeight, 0x2d5a27)
+        .setOrigin(0.5, 0.5);
 
       // Start live price polling for the battle
       priceService.startPolling();
@@ -118,8 +108,6 @@ export default class PlayScene extends Scene {
       // River colliders for walking troops
       this.physics.add.collider(this.player.walkingTroops, this.river);
       this.physics.add.collider(this.opponent.walkingTroops, this.river);
-
-      this.weather = new WeatherSystem(this);
 
       // Win/lose conditions
       this.events.on("tower-destroyed", () => {

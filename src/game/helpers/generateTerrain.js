@@ -1,91 +1,56 @@
 import Phaser from "phaser";
-
-import Tree from "../classes/entities/environment/Tree.js";
-import TreeTrunk from "../classes/entities/environment/TreeTrunk.js";
-import Rock from "../classes/entities/environment/Rock.js";
-import Grass from "../classes/entities/environment/Grass.js";
 import Waypoint from "../classes/entities/waypoints/Waypoint.js";
 
 function genTerrain(scene) {
   const worldWidth = scene.physics.world.bounds.width;
   const worldHeight = scene.physics.world.bounds.height;
 
-  // Create randomly positioned trees
-  scene.trees = [];
-  for (let i = 0; i < 3; i++) {
-    let treeX = parseInt(Math.random() * worldWidth, 0);
-    let treeY = parseInt(Math.random() * worldHeight, 0);
-    scene.trees.push(new Tree(scene, treeX, treeY));
-  }
-
-  // Create randomly positioned tree trunks
-  scene.treeTrunks = [];
-  for (let i = 0; i < 2; i++) {
-    let treeTrunkX = parseInt(Math.random() * worldWidth, 0);
-    let treeTrunkY = parseInt(Math.random() * worldHeight, 0);
-    scene.treeTrunks.push(new TreeTrunk(scene, treeTrunkX, treeTrunkY));
-  }
-
-  // Create randomly positioned rocks
-  scene.rocks = [];
-  for (let i = 0; i < 7; i++) {
-    let rockX = parseInt(Math.random() * worldWidth, 0);
-    let rockY = parseInt(Math.random() * worldHeight, 0);
-    scene.rocks.push(new Rock(scene, rockX, rockY));
-  }
-
-  // Create randomly positioned grass
-  scene.grass = [];
-  for (let i = 0; i < 8; i++) {
-    let grassX = parseInt(Math.random() * worldWidth, 0);
-    let grassY = parseInt(Math.random() * worldHeight, 0);
-    scene.grass.push(new Grass(scene, grassX, grassY));
-  }
+  // Field line markings (subtle)
+  scene.add
+    .rectangle(worldWidth / 2, worldHeight / 4, worldWidth - 40, 1, 0x3a7a33, 0.5)
+    .setOrigin(0.5, 0.5);
+  scene.add
+    .rectangle(worldWidth / 2, (worldHeight * 3) / 4, worldWidth - 40, 1, 0x3a7a33, 0.5)
+    .setOrigin(0.5, 0.5);
 
   // Create the river in the middle of the playing field
   scene.river = scene.add.group();
+
+  // Main river body
   scene.river.add(
     scene.physics.add
       .existing(
         scene.add.rectangle(
           worldWidth / 2,
           worldHeight / 2,
-          worldWidth / 2,
-          15,
-          0x3333bb
+          worldWidth,
+          20,
+          0x3366cc
         ),
         true
       )
       .setOrigin(0.5, 0.5)
   );
-  scene.river.add(
-    scene.physics.add
-      .existing(
-        scene.add.rectangle(0, worldHeight / 2, worldWidth / 10, 15, 0x3333bb),
-        true
-      )
-      .setOrigin(0, 0.5)
-  );
-  scene.river.add(
-    scene.physics.add
-      .existing(
-        scene.add.rectangle(
-          worldWidth,
-          worldHeight / 2,
-          worldWidth / 10,
-          15,
-          0x3333bb
-        ),
-        true
-      )
-      .setOrigin(1, 0.5)
-  );
 
-  // Create bridges across the river
-  scene.add.sprite(28, worldHeight / 2, "bridge").setOrigin(0.5, 0.5);
+  // Bridge left
   scene.add
-    .sprite(worldWidth - 28, worldHeight / 2, "bridge")
-    .setOrigin(0.5, 0.5);
+    .rectangle(worldWidth * 0.2, worldHeight / 2, 50, 28, 0x8B7355)
+    .setOrigin(0.5, 0.5)
+    .setDepth(5);
+  scene.add
+    .rectangle(worldWidth * 0.2, worldHeight / 2, 46, 24, 0xA0926B)
+    .setOrigin(0.5, 0.5)
+    .setDepth(6);
+
+  // Bridge right
+  scene.add
+    .rectangle(worldWidth * 0.8, worldHeight / 2, 50, 28, 0x8B7355)
+    .setOrigin(0.5, 0.5)
+    .setDepth(5);
+  scene.add
+    .rectangle(worldWidth * 0.8, worldHeight / 2, 46, 24, 0xA0926B)
+    .setOrigin(0.5, 0.5)
+    .setDepth(6);
 
   // Populate waypoints
   try {

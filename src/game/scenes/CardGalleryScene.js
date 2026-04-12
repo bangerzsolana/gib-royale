@@ -56,6 +56,29 @@ class CardGalleryScene extends Scene {
           font-size: 13px;
           color: #888;
         }
+        #card-gallery-overlay .cg-filters {
+          display: flex;
+          gap: 6px;
+          padding: 8px 12px;
+          max-width: 480px;
+          margin: 0 auto;
+          flex-wrap: wrap;
+        }
+        #card-gallery-overlay .cg-filter-btn {
+          font-size: 11px;
+          font-weight: 700;
+          padding: 4px 10px;
+          border-radius: 12px;
+          border: 1px solid #555;
+          background: #2a2a3a;
+          color: #aaa;
+          cursor: pointer;
+        }
+        #card-gallery-overlay .cg-filter-btn.active {
+          background: #ffcc00;
+          color: #000;
+          border-color: #ffcc00;
+        }
         #card-gallery-overlay .cg-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
@@ -108,6 +131,14 @@ class CardGalleryScene extends Scene {
         <span class="cg-title">LIVE PYTH CARDS</span>
         <span class="cg-count" id="cg-count"></span>
       </div>
+      <div class="cg-filters" id="cg-filters">
+        <button class="cg-filter-btn active" data-filter="all">ALL</button>
+        <button class="cg-filter-btn" data-filter="glass-cannon">GLASS</button>
+        <button class="cg-filter-btn" data-filter="attacker">ATK</button>
+        <button class="cg-filter-btn" data-filter="utility">UTIL</button>
+        <button class="cg-filter-btn" data-filter="defender">DEF</button>
+        <button class="cg-filter-btn" data-filter="fortress">FORT</button>
+      </div>
       <div id="cg-grid-area">
         <div class="cg-loading" id="cg-loading">Fetching live Pyth data...</div>
       </div>
@@ -121,15 +152,30 @@ class CardGalleryScene extends Scene {
       this.scene.start("TitleScene");
     });
 
+    // Wire up filter buttons
+    this._activeFilter = 'all';
+    this.overlay.querySelectorAll('.cg-filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        this.overlay.querySelectorAll('.cg-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this._activeFilter = btn.dataset.filter;
+        this._applyFilter();
+      });
+    });
+
     // Start fetching
     this._startLiveData();
   }
 
   async _startLiveData() {
-    const success = await priceService.fetchPrices();
+    // Fetch Pyth (real-time) and Railway (non-Pyth coins) in parallel
+    const [pythOk, railwayOk] = await Promise.all([
+      priceService.fetchPrices(),
+      priceService.fetchRailwayPrices(),
+    ]);
     const loadingEl = document.getElementById("cg-loading");
 
-    if (!success) {
+    if (!pythOk && !railwayOk) {
       if (loadingEl) loadingEl.textContent = "Failed to fetch prices. Check connection.";
       return;
     }
@@ -178,6 +224,21 @@ class CardGalleryScene extends Scene {
 
     gridArea.innerHTML = "";
     gridArea.appendChild(grid);
+  }
+
+  _applyFilter() {
+    for (const [symbol, card] of Object.entries(this.cardEls)) {
+      const role = priceService.getTokenRole(symbol);
+      if (this._activeFilter === 'all' || role === this._activeFilter) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    }
+    // Update count
+    const visible = Object.values(this.cardEls).filter(c => c.style.display !== 'none').length;
+    const countEl = document.getElementById('cg-count');
+    if (countEl) countEl.textContent = visible + ' coins';
   }
 
   _updateCard(symbol) {

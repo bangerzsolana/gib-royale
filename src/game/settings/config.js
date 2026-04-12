@@ -11,9 +11,8 @@ import LoseScene from "../scenes/LoseScene.js";
 export var config = {
   type: Phaser.AUTO,
   parent: "game-container",
-  pixelArt: true,
   zoom: 1,
-  backgroundColor: "#000000",
+  backgroundColor: "#1a1a2e",
   scene: [
     LoadingScene,
     TitleScene,
@@ -37,7 +36,7 @@ export var config = {
   scale: {
     parent: "game-container",
     mode: Phaser.Scale.FIT,
-    width: 160,
-    height: 265
+    width: 360,
+    height: 640
   }
 };

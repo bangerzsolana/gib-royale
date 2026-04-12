@@ -10,20 +10,20 @@ HasDestructionParticles.particles = null;
 HasDestructionParticles.methods = {
   _init() {
     if (!HasDestructionParticles.particles) {
-      HasDestructionParticles.particles = this.scene.add.particles("npc", [
+      HasDestructionParticles.particles = this.scene.add.particles("particle-rect", [
         {
-          x: { min: -10, max: 10 },
-          y: { min: -10, max: 10 },
-          scale: 0.2,
+          x: { min: -15, max: 15 },
+          y: { min: -15, max: 15 },
+          scale: 0.5,
           tint: 0xff7777,
-          blendMode: "MIXX",
+          blendMode: "ADD",
           lifespan: 1500,
-          speedX: { min: -20, max: 20 },
-          speedY: { min: -10, max: -50 },
+          speedX: { min: -30, max: 30 },
+          speedY: { min: -15, max: -60 },
           accelerationX: 0,
-          accelerationY: 40,
+          accelerationY: 50,
           on: false,
-          quantity: 4
+          quantity: 6
         }
       ]);
     }

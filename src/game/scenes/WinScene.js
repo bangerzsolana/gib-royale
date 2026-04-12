@@ -6,24 +6,25 @@ class WinScene extends Scene {
   }
 
   create() {
-    this.cameras.main.setBackgroundColor("#77dd77");
+    this.cameras.main.setBackgroundColor("#1a3a1a");
     const centerX = this.cameras.main.centerX;
     const centerY = this.cameras.main.centerY;
 
     this.add
-      .bitmapText(centerX, centerY - 25, "teeny-tiny-pixls", "You win!", 15)
-      .setTint(0x000000)
+      .text(centerX, centerY - 40, "You Win!", {
+        fontSize: "36px",
+        fontFamily: "Arial, sans-serif",
+        fontStyle: "bold",
+        color: "#44ff44"
+      })
       .setOrigin(0.5, 0.5);
 
     this.add
-      .bitmapText(
-        centerX,
-        centerY + 12,
-        "teeny-tiny-pixls",
-        "Click or touch to restart!",
-        5
-      )
-      .setTint(0x000000)
+      .text(centerX, centerY + 20, "Tap to play again", {
+        fontSize: "16px",
+        fontFamily: "Arial, sans-serif",
+        color: "#aaccaa"
+      })
       .setOrigin(0.5, 0.5);
 
     this.input.on("pointerdown", () => {

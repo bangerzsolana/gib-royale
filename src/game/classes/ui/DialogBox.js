@@ -13,24 +13,22 @@ export default class DialogBox extends Phaser.GameObjects.Container {
       .rectangle(
         gameWidth / 2,
         0,
-        gameWidth - 4,
-        gameHeight / 4 - 2,
-        0x000,
-        0.5
+        gameWidth - 8,
+        gameHeight / 4 - 4,
+        0x000000,
+        0.6
       )
       .setOrigin(0.5, 0);
 
     this.text = scene.add
-      .bitmapText(
-        gameWidth / 2,
-        2,
-        "teeny-tiny-pixls",
-        text,
-        5,
-        1
-      )
-      .setOrigin(0.5, 0)
-      .setMaxWidth(100);
+      .text(gameWidth / 2, 8, text, {
+        fontSize: "13px",
+        fontFamily: "Arial, sans-serif",
+        color: "#ffffff",
+        wordWrap: { width: gameWidth - 40 },
+        align: "center"
+      })
+      .setOrigin(0.5, 0);
 
     this.add(this.backgroundBox);
     this.add(this.text);

@@ -6,38 +6,72 @@ class Card extends Phaser.GameObjects.Container {
 
     this.troopClass = troopClass;
     this.coinSymbol = coinSymbol || null;
-    this.width = 25;
-    this.height = 25;
+    this.width = 68;
+    this.height = 85;
 
     this.isSelected = false;
 
     scene.add.existing(this).setDepth(10000);
 
-    // Add background
+    // Card background
     this.background = scene.add
-      .rectangle(0, 0, this.width, this.height, 0xbbbbbb)
-      .setOrigin(0, 0);
+      .rectangle(0, 0, this.width, this.height, 0x2a2a3e)
+      .setOrigin(0, 0)
+      .setStrokeStyle(1, 0x555577);
     this.add(this.background);
 
-    // Add troop image
-    const animKey = troopClass.ANIM_KEY_PREFIX;
-    this.add(scene.add.sprite(this.width / 2, this.height / 2, animKey));
+    // Coin color circle in center
+    const coinEntry = coinSymbol
+      ? (scene.game.__coinDeckLookup && scene.game.__coinDeckLookup[coinSymbol])
+      : null;
+    const circleColor = coinEntry ? coinEntry.color : 0x888888;
 
-    // Add coin name label at bottom (if linked to a coin)
+    this.coinCircle = scene.add
+      .circle(this.width / 2, 32, 16, circleColor)
+      .setOrigin(0.5, 0.5);
+    this.add(this.coinCircle);
+
+    // Coin name label
     if (coinSymbol) {
       this.add(
         scene.add
-          .bitmapText(this.width / 2, this.height - 1, "teeny-tiny-pixls", coinSymbol, 5)
-          .setOrigin(0.5, 1)
+          .text(this.width / 2, 56, coinSymbol, {
+            fontSize: "10px",
+            fontFamily: "Arial, sans-serif",
+            color: "#ffffff",
+            fontStyle: "bold"
+          })
+          .setOrigin(0.5, 0.5)
       );
     }
 
-    // Add mana cost text at top-left
+    // Mana cost (top-left, blue circle with number)
     const cost = troopClass.COST;
     this.add(
       scene.add
-        .text(0, 0, cost, { color: "blue", fontSize: "8px" })
-        .setOrigin(0, 0)
+        .circle(10, 10, 10, 0x3366ff)
+        .setOrigin(0.5, 0.5)
+    );
+    this.add(
+      scene.add
+        .text(10, 10, cost, {
+          fontSize: "11px",
+          fontFamily: "Arial, sans-serif",
+          color: "#ffffff",
+          fontStyle: "bold"
+        })
+        .setOrigin(0.5, 0.5)
+    );
+
+    // Role/type indicator at bottom
+    this.add(
+      scene.add
+        .text(this.width / 2, 73, troopClass.NAME.replace("Troop", ""), {
+          fontSize: "7px",
+          fontFamily: "Arial, sans-serif",
+          color: "#888899"
+        })
+        .setOrigin(0.5, 0.5)
     );
   }
 

@@ -66,17 +66,6 @@ CanWalk.methods = {
   },
 
   _preUpdate() {
-    let thisVel = this.body.velocity;
-    if (Math.abs(thisVel.x) > Math.abs(thisVel.y)) {
-      this.anims.play(this.animKeyPrefix + "--side", true);
-      if (thisVel.x > 0) this.flipX = false;
-      else this.flipX = true;
-    } else {
-      if (thisVel.y > 0) this.anims.play(this.animKeyPrefix + "--front", true);
-      else if (thisVel.y < 0)
-        this.anims.play(this.animKeyPrefix + "--back", true);
-    }
-
     if (!this.effectTarget || this.effectTarget.isDestroyed) {
       this.enemyTroop = null;
       if (!this.currentWaypoint || this.currentWaypoint.isDestroyed) {

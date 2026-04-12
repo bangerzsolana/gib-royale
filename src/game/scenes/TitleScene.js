@@ -9,38 +9,36 @@ class TitleScene extends Scene {
     const centerX = this.cameras.main.centerX;
     const centerY = this.cameras.main.centerY;
 
+    this.cameras.main.setBackgroundColor("#1a1a2e");
+
     this.add
-      .bitmapText(
-        centerX,
-        centerY - 25,
-        "teeny-tiny-pixls",
-        "Gib\nRoyale",
-        15
-      )
+      .text(centerX, centerY - 60, "Gib\nRoyale", {
+        fontSize: "48px",
+        fontFamily: "Arial, sans-serif",
+        color: "#ffffff",
+        fontStyle: "bold",
+        align: "center"
+      })
       .setOrigin(0.5, 0.5);
 
     this.add
-      .bitmapText(
-        centerX,
-        centerY + 12,
-        "teeny-tiny-pixls",
-        "Click or touch to begin!",
-        5
-      )
+      .text(centerX, centerY + 20, "Tap to play", {
+        fontSize: "16px",
+        fontFamily: "Arial, sans-serif",
+        color: "#aaaacc"
+      })
       .setOrigin(0.5, 0.5);
 
     // Cards gallery button
     const cardsBtn = this.add
-      .bitmapText(
-        centerX,
-        centerY + 35,
-        "teeny-tiny-pixls",
-        "[ CARDS ]",
-        5
-      )
+      .text(centerX, centerY + 70, "[ CARD GALLERY ]", {
+        fontSize: "14px",
+        fontFamily: "Arial, sans-serif",
+        color: "#ffcc00",
+        fontStyle: "bold"
+      })
       .setOrigin(0.5, 0.5)
-      .setTint(0xffcc00)
-      .setInteractive();
+      .setInteractive({ useHandCursor: true });
 
     let cardsBtnClicked = false;
     cardsBtn.on("pointerdown", () => {

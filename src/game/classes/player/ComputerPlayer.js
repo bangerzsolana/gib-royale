@@ -6,9 +6,8 @@ export default class ComputerPlayer extends Player {
     const worldWidth = scene.physics.world.bounds.width;
     const worldHeight = scene.physics.world.bounds.height;
     const halfWorldWidth = worldWidth / 2;
-    const halfWorldHeight = worldHeight / 2;
 
-    super(scene, 0, 0, halfWorldWidth, 30, 1);
+    super(scene, 0, 0, halfWorldWidth, 50, 1);
 
     this.manaBank = new ManaBank(scene, 0, 0, 10, 10, 10);
 
@@ -27,7 +26,7 @@ export default class ComputerPlayer extends Player {
       if (Math.random() < 0.25) {
         this.spawnTroop(
           parseInt(Math.random() * this.scene.game.config.width, 0),
-          50,
+          80,
           this.troopVelocityDirection
         );
       }

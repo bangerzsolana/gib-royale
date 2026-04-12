@@ -14,16 +14,16 @@ HasShadow.methods = {
     this.shadow = this.scene.add.ellipse(
       this.x,
       this.y,
-      this.width / 1.1,
-      this.height / 1.25,
+      this.width * 0.8,
+      this.height * 0.4,
       0x000000,
-      0.25
+      0.2
     );
     this.shadow.setDepth(2);
   },
 
   _preUpdate() {
-    this.shadow.setPosition(this.x, this.y - 2);
+    this.shadow.setPosition(this.x, this.y + this.height / 4);
   },
 
   _destroy() {

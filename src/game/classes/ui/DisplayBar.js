@@ -31,7 +31,14 @@ export default class DisplayBar extends Phaser.GameObjects.Container {
     this.add(this.foregroundBar);
 
     // value text display
-    this.text = scene.add.text(0, 0, value).setOrigin(0.5);
+    this.text = scene.add
+      .text(0, 0, value, {
+        fontSize: "12px",
+        fontFamily: "Arial, sans-serif",
+        color: "#ffffff",
+        fontStyle: "bold"
+      })
+      .setOrigin(0.5);
     this.add(this.text);
 
     this.setDepth(99999);

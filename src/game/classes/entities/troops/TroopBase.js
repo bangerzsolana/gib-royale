@@ -1,5 +1,12 @@
 import Components from "../components/index.js";
 import PhysicalEntity from "../PhysicalEntity.js";
+import COIN_DECK from "../../../data/CoinDeck.js";
+
+// Build a quick lookup: symbol → color
+const COIN_COLORS = {};
+for (const entry of COIN_DECK) {
+  COIN_COLORS[entry.symbol] = entry.color;
+}
 
 const MIXINS = [
   Components.CanBeAttacked,
@@ -19,31 +26,54 @@ class TroopBase extends PhysicalEntity {
       config.scene,
       config.x,
       config.y,
-      "character"
+      "circle-troop"
     );
 
     const { scene } = config;
     this.scene = scene;
 
+    // Store animKeyPrefix for compatibility but don't play animations
     this.animKeyPrefix = config.animKeyPrefix;
-
-    this.anims.play(`${this.animKeyPrefix}--front`, true);
 
     const width = this.width;
     const height = this.height;
-    this.setCircle(width / 4, width / 4, height / 2 + 1)
+    this.setCircle(width / 4, width / 4, height / 4)
       .setCollideWorldBounds(true)
       .setMaxVelocity(30, 30)
       .setDrag(10)
       .setBounce(0.5)
       .setFriction(10)
-      .setOrigin(0.5, 1)
+      .setOrigin(0.5, 0.5)
       .setDepth(this.y);
 
     this.owner = config.owner;
     this.velocityDirection = config.velocityDirection;
 
     this.setOverallHealth(100);
+
+    // Apply coin color tint
+    if (config.tokenId && COIN_COLORS[config.tokenId]) {
+      this.setTint(COIN_COLORS[config.tokenId]);
+    } else if (config.owner && config.owner.troopVelocityDirection === 1) {
+      // Opponent troops get a red tint
+      this.setTint(0xff4444);
+    } else {
+      this.setTint(0x4488ff);
+    }
+
+    // Add coin name label that follows the troop
+    const label = config.tokenId || "";
+    this.coinLabel = scene.add
+      .text(this.x, this.y, label, {
+        fontSize: "9px",
+        fontFamily: "Arial, sans-serif",
+        color: "#ffffff",
+        fontStyle: "bold",
+        stroke: "#000000",
+        strokeThickness: 2
+      })
+      .setOrigin(0.5, 0.5)
+      .setDepth(999997);
 
     // If a tokenId was passed in the config, set it for price tracking
     if (config.tokenId) {
@@ -61,9 +91,15 @@ class TroopBase extends PhysicalEntity {
 
   preUpdate(time, delta) {
     super.preUpdate(time, delta);
+
+    // Keep coin label following the troop
+    if (this.coinLabel && !this.isDestroyed) {
+      this.coinLabel.setPosition(this.x, this.y + 2);
+    }
   }
 
   destroy() {
+    if (this.coinLabel) this.coinLabel.destroy();
     super.destroy();
   }
 }

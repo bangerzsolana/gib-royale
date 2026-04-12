@@ -1,12 +1,11 @@
 import Components from "../components/index.js";
 import PhysicalEntity from "../PhysicalEntity.js";
-import COIN_DECK from "../../../data/CoinDeck.js";
 
-// Build a quick lookup: symbol → color
-const COIN_COLORS = {};
-for (const entry of COIN_DECK) {
-  COIN_COLORS[entry.symbol] = entry.color;
-}
+// Default coin colors — looked up by tokenId at spawn time
+const COIN_COLORS = {
+  BONK: 0xf7931a, WIF: 0x9945ff, TRUMP: 0xff4444, FARTCOIN: 0x44bb44,
+  POPCAT: 0xff69b4, MOODENG: 0x00ccff, SOL: 0x14f195, PNUT: 0xddaa44
+};
 
 const MIXINS = [
   Components.CanBeAttacked,

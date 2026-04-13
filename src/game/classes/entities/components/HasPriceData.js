@@ -61,8 +61,8 @@ HasPriceData.methods = {
   updatePriceIndicator() {
     if (!this.priceIndicator) {
       this.priceIndicator = this.scene.add
-        .text(this.x, this.y - this.height - 8, "", {
-          fontSize: "10px",
+        .text(this.x, this.y - this.height - 28, "", {
+          fontSize: "16px",
           fontFamily: "Arial, sans-serif",
           fontStyle: "bold",
           color: "#00ff00",
@@ -179,7 +179,7 @@ HasPriceData.methods = {
 
     // Keep price indicator following the troop
     if (this.priceIndicator && !this.isDestroyed) {
-      this.priceIndicator.setPosition(this.x, this.y - this.height / 2 - 22);
+      this.priceIndicator.setPosition(this.x, this.y - this.height / 2 - 48);
     }
 
   },

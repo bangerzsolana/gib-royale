@@ -287,15 +287,19 @@ class PriceService {
         for (const row of rows) {
           const symbol = (row.ticker || '').replace(/^\$/, '');
           if (!symbol) continue;
-          // Merge market cap into existing token data (don't overwrite Pyth prices)
+          // Merge market cap + volatility into existing token data (don't overwrite Pyth prices)
           if (this.tokens[symbol]) {
             this.tokens[symbol].marketCap = row.market_cap || 0;
+            this.tokens[symbol].change7d = row.change_7d || this.tokens[symbol].change7d || 0;
+            this.tokens[symbol].volume24h = row.volume || this.tokens[symbol].volume24h || 0;
           } else {
             // Token not yet fetched — store minimal data
             this.tokens[symbol] = {
               name: symbol,
               price: row.price || 0,
               marketCap: row.market_cap || 0,
+              change7d: row.change_7d || 0,
+              volume24h: row.volume || 0,
               source: 'railway',
             };
           }
@@ -333,6 +337,73 @@ class PriceService {
     const normalized = Math.max(0, Math.min(1, (logCap - 5) / 6));
     // 1.4 at low cap, 0.6 at high cap
     return 1.4 - (normalized * 0.8);
+  }
+
+  /**
+   * Calculate base HP from market cap.
+   * Bigger coins = more health (tanks).
+   *
+   * Market Cap Tiers:
+   *   >$50B   → 300 HP  (mega-cap: BTC, ETH, SOL)
+   *   $5B-$50B → 200 HP  (large-cap: LINK, RENDER)
+   *   $500M-$5B → 120 HP (mid-cap: BONK, WIF, POPCAT, TRUMP)
+   *   $50M-$500M → 70 HP (small-cap: various meme coins)
+   *   $5M-$50M → 40 HP   (micro-cap: tiny meme coins)
+   *   <$5M    → 20 HP    (nano-cap)
+   *
+   * Uses continuous log scale between tiers for smooth transitions.
+   */
+  getBaseHP(symbol) {
+    const cap = this.getMarketCap(symbol);
+    if (!cap || cap <= 0) return 80; // No data → mid-range default
+
+    const logCap = Math.log10(cap);
+    // Tiers: log10($5M)=6.7, log10($50M)=7.7, log10($500M)=8.7, log10($5B)=9.7, log10($50B)=10.7
+    if (logCap >= 10.7) return 300;       // >$50B
+    if (logCap >= 9.7) return Math.round(200 + (logCap - 9.7) * 100);  // $5B-$50B: 200-300
+    if (logCap >= 8.7) return Math.round(120 + (logCap - 8.7) * 80);   // $500M-$5B: 120-200
+    if (logCap >= 7.7) return Math.round(70 + (logCap - 7.7) * 50);    // $50M-$500M: 70-120
+    if (logCap >= 6.7) return Math.round(40 + (logCap - 6.7) * 30);    // $5M-$50M: 40-70
+    return 20;                             // <$5M
+  }
+
+  /**
+   * Calculate base damage from volatility (7-day % change magnitude).
+   * More volatile coins = harder hitters (glass cannons).
+   *
+   * Volatility Tiers:
+   *   >30% abs change → 40 base damage (extreme volatility)
+   *   15-30%          → 25 base damage (high volatility)
+   *   5-15%           → 15 base damage (medium volatility)
+   *   <5%             → 8 base damage  (stable / low volatility)
+   *
+   * Uses continuous scale for smooth transitions.
+   */
+  getBaseDamage(symbol) {
+    const token = this.tokens[symbol];
+    if (!token) return 12; // No data → moderate default
+
+    const volatility = Math.abs(token.change7d || 0);
+    if (volatility >= 30) return 40;
+    if (volatility >= 15) return Math.round(25 + (volatility - 15) / 15 * 15); // 25-40
+    if (volatility >= 5)  return Math.round(15 + (volatility - 5) / 10 * 10);  // 15-25
+    return Math.round(8 + volatility / 5 * 7);                                 // 8-15
+  }
+
+  /**
+   * Get full market-driven combat stats for a coin.
+   * Returns { hp, damage, speedMultiplier } or null if no data.
+   */
+  getCombatStats(symbol) {
+    const token = this.tokens[symbol];
+    if (!token) return null;
+    return {
+      hp: this.getBaseHP(symbol),
+      damage: this.getBaseDamage(symbol),
+      speedMultiplier: this.getSpeedMultiplier(symbol),
+      marketCap: token.marketCap || 0,
+      volatility: Math.abs(token.change7d || 0),
+    };
   }
 
   /**

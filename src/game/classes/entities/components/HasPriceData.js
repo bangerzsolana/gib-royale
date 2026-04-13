@@ -178,15 +178,47 @@ HasPriceData.methods = {
     this.priceIndicator.setColor(color);
   },
 
+  /**
+   * Apply data-driven combat stats from market data.
+   * HP from market cap, damage from volatility, speed from inverse market cap.
+   * Overwrites the hardcoded troop stats with real market-derived values.
+   */
+  applyMarketStats() {
+    if (!this.tokenId) return;
+    const stats = priceService.getCombatStats(this.tokenId);
+    if (!stats) return;
+
+    // HP from market cap
+    if (stats.hp && this.setOverallHealth) {
+      this.baseHealth = stats.hp;
+      this.setOverallHealth(stats.hp);
+    }
+
+    // Base damage from volatility
+    if (stats.damage) {
+      this.baseDamage = stats.damage;
+      if (this.setDamageAmount) {
+        this.setDamageAmount(Math.round(this.baseDamage * this.damageMultiplier));
+      }
+    }
+
+    // Speed from inverse market cap (already handled by applySpeedFromMarketCap)
+    this.applySpeedFromMarketCap();
+
+    this._marketStatsApplied = true;
+  },
+
   _init() {
-    // Store base stats at spawn time
+    // Store hardcoded troop stats as initial fallback
     if (this.damageAmount) this.baseDamage = this.damageAmount;
     if (this.overallHealth) this.baseHealth = this.overallHealth;
     if (this.movementSpeed) this.baseMovementSpeed = this.movementSpeed;
 
-    // Apply market-cap speed modifier immediately if data is available
+    this._marketStatsApplied = false;
+
+    // Apply data-driven stats immediately if data is available
     if (this.tokenId) {
-      this.applySpeedFromMarketCap();
+      this.applyMarketStats();
     }
   },
 
@@ -214,6 +246,11 @@ HasPriceData.methods = {
 
       const tokenData = priceService.getTokenWithPower(this.tokenId);
       if (tokenData) {
+        // Apply market-driven base stats if not yet applied (data may arrive after spawn)
+        if (!this._marketStatsApplied) {
+          this.applyMarketStats();
+        }
+
         // Use EMA momentum as percent change: (price - ema) / ema * 100
         const momentum = tokenData.emaPrice
           ? ((tokenData.price - tokenData.emaPrice) / tokenData.emaPrice) * 100

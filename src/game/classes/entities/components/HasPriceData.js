@@ -59,6 +59,20 @@ HasPriceData.methods = {
   },
 
   updatePriceIndicator() {
+    // Only ONE indicator per tokenId per team — avoid stacked duplicates
+    if (!this.scene._priceIndicatorOwners) this.scene._priceIndicatorOwners = {};
+    const key = `${this.tokenId}_${this.isPlayerTroop ? 'p' : 'c'}`;
+    const currentOwner = this.scene._priceIndicatorOwners[key];
+
+    // If another living troop already owns this indicator, hide ours
+    if (currentOwner && currentOwner !== this && !currentOwner.isDestroyed && currentOwner.active) {
+      if (this.priceIndicator) this.priceIndicator.setVisible(false);
+      return;
+    }
+
+    // We're the owner (or previous owner died)
+    this.scene._priceIndicatorOwners[key] = this;
+
     if (!this.priceIndicator) {
       this.priceIndicator = this.scene.add
         .text(this.x, this.y + 20, "", {
@@ -73,6 +87,7 @@ HasPriceData.methods = {
         .setDepth(999999); // Top layer — nothing covers this
     }
 
+    this.priceIndicator.setVisible(true);
     const pct = this.priceChangePercent;
     const arrow = pct >= 0 ? "\u25B2" : "\u25BC"; // ▲ or ▼
     const color = pct >= 0 ? "#00ff00" : "#ff4444";
@@ -191,6 +206,13 @@ HasPriceData.methods = {
 
   _destroy() {
     if (this.priceIndicator) this.priceIndicator.destroy();
+    // Release indicator ownership so another troop of same coin can take over
+    if (this.scene && this.scene._priceIndicatorOwners) {
+      const key = `${this.tokenId}_${this.isPlayerTroop ? 'p' : 'c'}`;
+      if (this.scene._priceIndicatorOwners[key] === this) {
+        delete this.scene._priceIndicatorOwners[key];
+      }
+    }
   }
 };
 

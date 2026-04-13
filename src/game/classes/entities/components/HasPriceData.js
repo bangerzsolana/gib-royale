@@ -62,21 +62,21 @@ HasPriceData.methods = {
     if (!this.priceIndicator) {
       this.priceIndicator = this.scene.add
         .text(this.x, this.y - this.height - 8, "", {
-          fontSize: "9px",
+          fontSize: "10px",
           fontFamily: "Arial, sans-serif",
           fontStyle: "bold",
           color: "#00ff00",
           stroke: "#000000",
-          strokeThickness: 2
+          strokeThickness: 3
         })
         .setOrigin(0.5, 0.5)
         .setDepth(999998);
     }
 
     const pct = this.priceChangePercent;
-    const sign = pct >= 0 ? "+" : "";
+    const arrow = pct >= 0 ? "\u25B2" : "\u25BC"; // ▲ or ▼
     const color = pct >= 0 ? "#00ff00" : "#ff4444";
-    this.priceIndicator.setText(`${sign}${pct.toFixed(1)}%`);
+    this.priceIndicator.setText(`${arrow} ${Math.abs(pct).toFixed(1)}%`);
     this.priceIndicator.setColor(color);
   },
 

@@ -19,7 +19,7 @@ const RAILWAY_API_URL = 'https://uniblock-migration-production.up.railway.app/ap
 // All 110 game coins — non-Pyth ones get data from Railway API
 const NON_PYTH_COINS = [
   'AURA', 'NPC', 'USDUC', 'STNK', 'DOG', 'MPLX', 'LABUBU',
-  'CARDS', 'SAVE', 'PURPE', 'SNS', 'STEP', 'SIGMA', 'PLAY',
+  'CARDS', 'SAVE', 'PURPE', 'SNS', 'STEP', 'SIGMA', 'PLAY', 'GLDX',
   'SCF', 'CWIF', 'LETSBONK', 'MAX', 'POWSCHE', 'ROCKY', 'SILLY',
   'SKR', 'VX', 'BRK.BX', 'CHONKY',
 ];
@@ -114,7 +114,7 @@ const PYTH_COINS = [
   { symbol: 'CVXX',     feedId: 'f464e36fd4ef2f1c3dc30801a9ab470dcdaaa0af14dd3cf6ae17a7fca9e051c5' },
   { symbol: 'GME',      feedId: '6f9cd89ef1b7fd39f667101a91ad578b6c6ace4579d5f7f285a4b06aa4504be6' },
   { symbol: 'VTIX',     feedId: '26c67e91769aeba33a09469c705a1863794014dac416e4270661f489309ae862' },
-  { symbol: 'GLDX',     feedId: 'e190f467043db04548200354889dfe0d9d314c08b8d4e762fabf4d5a3140fecca' },
+  // GLDX removed — feedId was corrupt (65 chars); moved to NON_PYTH_COINS
 ];
 
 // Deduplicate by symbol (BONK was listed twice)
@@ -162,12 +162,17 @@ class PriceService {
       }
 
       const results = await Promise.all(batches.map(async (batch) => {
-        const params = batch.map(c => `ids[]=${c.feedId}`).join('&');
-        const url = `${HERMES_URL}?${params}&parsed=true`;
-        const resp = await fetch(url);
-        if (!resp.ok) throw new Error(`Hermes API error: ${resp.status}`);
-        const data = await resp.json();
-        return data.parsed || [];
+        try {
+          const params = batch.map(c => `ids[]=${c.feedId}`).join('&');
+          const url = `${HERMES_URL}?${params}&parsed=true`;
+          const resp = await fetch(url);
+          if (!resp.ok) throw new Error(`Hermes API error: ${resp.status}`);
+          const data = await resp.json();
+          return data.parsed || [];
+        } catch (batchErr) {
+          console.warn('PriceService: Pyth batch failed, skipping:', batchErr.message);
+          return [];
+        }
       }));
 
       // Build a feedId -> parsed price map from all batches

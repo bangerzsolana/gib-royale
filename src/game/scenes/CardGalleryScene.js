@@ -133,11 +133,9 @@ class CardGalleryScene extends Scene {
       </div>
       <div class="cg-filters" id="cg-filters">
         <button class="cg-filter-btn active" data-filter="all">ALL</button>
-        <button class="cg-filter-btn" data-filter="glass-cannon">GLASS</button>
-        <button class="cg-filter-btn" data-filter="attacker">ATK</button>
-        <button class="cg-filter-btn" data-filter="utility">UTIL</button>
-        <button class="cg-filter-btn" data-filter="defender">DEF</button>
-        <button class="cg-filter-btn" data-filter="fortress">FORT</button>
+        <button class="cg-filter-btn" data-filter="Tank">TANK</button>
+        <button class="cg-filter-btn" data-filter="Fighter">FIGHTER</button>
+        <button class="cg-filter-btn" data-filter="Glass Cannon">GLASS CANNON</button>
       </div>
       <div id="cg-grid-area">
         <div class="cg-loading" id="cg-loading">Fetching live Pyth data...</div>
@@ -273,22 +271,18 @@ class CardGalleryScene extends Scene {
 
   _roleColorCSS(role) {
     const map = {
-      "glass-cannon": "#00ff88",
-      attacker: "#44ff44",
-      utility: "#ffff44",
-      defender: "#ff8844",
-      fortress: "#ff2222",
+      "Tank": "#4488ff",
+      "Fighter": "#ff8844",
+      "Glass Cannon": "#ff4444",
     };
     return map[role] || "#ffffff";
   }
 
   _roleShort(role) {
     const map = {
-      "glass-cannon": "GLASS CANNON",
-      attacker: "ATTACKER",
-      utility: "UTILITY",
-      defender: "DEFENDER",
-      fortress: "FORTRESS",
+      "Tank": "TANK",
+      "Fighter": "FIGHTER",
+      "Glass Cannon": "GLASS CANNON",
     };
     return map[role] || role.toUpperCase();
   }

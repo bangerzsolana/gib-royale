@@ -22,14 +22,14 @@ import VolcanoTroop from '../classes/entities/troops/walkers/VolcanoTroop.js';
  * Each entry maps a coin symbol to a troop class (pixel character).
  */
 const COIN_DECK = [
-  { symbol: 'BONK',     troopClass: BattleOtterTroop, color: 0xf7931a },
-  { symbol: 'WIF',      troopClass: QuackerTroop,     color: 0x9945ff },
-  { symbol: 'TRUMP',    troopClass: EvilTroop,         color: 0xff4444 },
-  { symbol: 'FARTCOIN', troopClass: VolcanoTroop,      color: 0x44bb44 },
-  { symbol: 'POPCAT',   troopClass: ChickphinTroop,    color: 0xff69b4 },
-  { symbol: 'MOODENG',  troopClass: LilDemonTroop,     color: 0x00ccff },
+  { symbol: 'BONK',     troopClass: BattleOtterTroop, color: 0x006b58 },
+  { symbol: 'WIF',      troopClass: QuackerTroop,     color: 0x8993eb },
+  { symbol: 'TRUMP',    troopClass: EvilTroop,         color: 0x313131 },
+  { symbol: 'FARTCOIN', troopClass: VolcanoTroop,      color: 0x000000 },
+  { symbol: 'POPCAT',   troopClass: ChickphinTroop,    color: 0x9cffff },
+  { symbol: 'MOODENG',  troopClass: LilDemonTroop,     color: 0x3ad789 },
   { symbol: 'SOL',      troopClass: TankTroop,          color: 0x14f195 },
-  { symbol: 'PNUT',     troopClass: AlienTroop,         color: 0xddaa44 },
+  { symbol: 'PNUT',     troopClass: AlienTroop,         color: 0x3a314e },
 ];
 
 export default COIN_DECK;

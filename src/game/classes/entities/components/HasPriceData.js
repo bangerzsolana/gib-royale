@@ -164,9 +164,11 @@ HasPriceData.methods = {
 
         // Calculate % change from deployment price — this is the core mechanic.
         // Each troop tracks its own P&L from the moment it was placed on the battlefield.
+        // 10x scaling factor so small real-world crypto moves feel meaningful in-game.
         if (this.deployPrice && tokenData.price > 0) {
-          this.priceChangePercent =
+          const rawPct =
             ((tokenData.price - this.deployPrice) / this.deployPrice) * 100;
+          this.priceChangePercent = rawPct * 10;
         }
 
         this.recalculateStats();

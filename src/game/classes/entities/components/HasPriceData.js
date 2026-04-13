@@ -14,6 +14,7 @@ class HasPriceData {
     var attributes = {
       tokenId: null,
       priceChangePercent: 0,
+      deployPrice: null, // Price snapshot at deployment — all % change is relative to this
       baseDamage: 10,
       baseHealth: 100,
       baseMovementSpeed: 0, // Set at spawn from troop's hardcoded speed
@@ -216,8 +217,12 @@ HasPriceData.methods = {
 
     this._marketStatsApplied = false;
 
-    // Apply data-driven stats immediately if data is available
+    // Snapshot the current price at deployment — all future % change is relative to this
     if (this.tokenId) {
+      const tokenData = priceService.getTokenWithPower(this.tokenId);
+      if (tokenData && tokenData.price > 0) {
+        this.deployPrice = tokenData.price;
+      }
       this.applyMarketStats();
     }
   },
@@ -251,11 +256,18 @@ HasPriceData.methods = {
           this.applyMarketStats();
         }
 
-        // Power IS the real-time intensity modifier.
-        // power = ((price - ema) / ema) × 1000 — the same number shown on Gib Meme.
-        // We convert to percentage scale for the multiplier thresholds.
-        const power = tokenData.power || 0;
-        this.priceChangePercent = power / 10; // power 10 = 1% momentum
+        // Snapshot deploy price if we didn't get it at init (data arrived late)
+        if (!this.deployPrice && tokenData.price > 0) {
+          this.deployPrice = tokenData.price;
+        }
+
+        // Calculate % change from deployment price — this is the core mechanic.
+        // Each troop tracks its own P&L from the moment it was placed on the battlefield.
+        if (this.deployPrice && tokenData.price > 0) {
+          this.priceChangePercent =
+            ((tokenData.price - this.deployPrice) / this.deployPrice) * 100;
+        }
+
         this.recalculateStats();
         this.updatePriceIndicator();
 

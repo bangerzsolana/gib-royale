@@ -4,22 +4,19 @@ const MIXINS = [Components.CanWalk];
 
 class AlienTroop extends Troop {
   constructor(config) {
-    super(MIXINS, { ...config, animKeyPrefix: STATIC.ANIM_KEY_PREFIX });
+    super(MIXINS, config);
     this.setMovementSpeed(17);
     this.setOverallHealth(10);
     this.setAttentionRange(60);
     this.setEffectRange(40);
     this.setEffectRate(1000);
     this.setDamageAmount(10);
-    this.setCost(4);
     this.setMaxVelocity(this.movementSpeed);
   }
 }
 
 const STATIC = AlienTroop;
-STATIC.ANIM_KEY_PREFIX = "troop--alien";
 STATIC.NAME = "AlienTroop";
-STATIC.IS_IN_DECK = true;
 STATIC.COST = 3;
 STATIC.doSpawn = function(config) {
   new AlienTroop({ ...config, x: config.x, y: config.y });

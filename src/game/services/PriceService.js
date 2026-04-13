@@ -315,10 +315,52 @@ class PriceService {
           }
         }
       }
+      // Fetch blue chips not in Railway (BTC, ETH, SOL) from CoinGecko
+      await this.fetchBlueChipMarketCaps();
+
       return true;
     } catch (err) {
       console.error('PriceService market cap fetch error:', err);
       return false;
+    }
+  }
+
+  /**
+   * Fetch market cap for BTC, ETH, SOL from CoinGecko free API.
+   * These 3 blue chips aren't in the Railway DB (which tracks gib-meme coins only).
+   */
+  async fetchBlueChipMarketCaps() {
+    const BLUE_CHIPS = {
+      bitcoin: 'BTC',
+      ethereum: 'ETH',
+      solana: 'SOL',
+    };
+    try {
+      const ids = Object.keys(BLUE_CHIPS).join(',');
+      const resp = await fetch(
+        `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_market_cap=true&include_24hr_change=true`
+      );
+      if (!resp.ok) return;
+      const data = await resp.json();
+
+      for (const [geckoId, symbol] of Object.entries(BLUE_CHIPS)) {
+        const coin = data[geckoId];
+        if (!coin) continue;
+        if (this.tokens[symbol]) {
+          this.tokens[symbol].marketCap = coin.usd_market_cap || 0;
+        } else {
+          this.tokens[symbol] = {
+            name: symbol,
+            price: coin.usd || 0,
+            marketCap: coin.usd_market_cap || 0,
+            change7d: 0,
+            volume24h: 0,
+            source: 'coingecko',
+          };
+        }
+      }
+    } catch (err) {
+      console.error('PriceService CoinGecko blue chip fetch error:', err);
     }
   }
 
@@ -351,31 +393,24 @@ class PriceService {
   }
 
   /**
-   * Calculate base HP from market cap.
-   * Bigger coins = more health (tanks).
-   *
-   * Market Cap Tiers:
-   *   >$50B   → 300 HP  (mega-cap: BTC, ETH, SOL)
-   *   $5B-$50B → 200 HP  (large-cap: LINK, RENDER)
-   *   $500M-$5B → 120 HP (mid-cap: BONK, WIF, POPCAT, TRUMP)
-   *   $50M-$500M → 70 HP (small-cap: various meme coins)
-   *   $5M-$50M → 40 HP   (micro-cap: tiny meme coins)
-   *   <$5M    → 20 HP    (nano-cap)
-   *
-   * Uses continuous log scale between tiers for smooth transitions.
+   * Calculate base HP from market cap using continuous logarithmic scale.
+   * HP = 30 * log10(marketCap) - 80
+   * Bigger coins = more health, but log compression prevents mega-caps
+   * from being untouchable. No tier cliffs.
    */
   getBaseHP(symbol) {
     const cap = this.getMarketCap(symbol);
     if (!cap || cap <= 0) return 80; // No data → mid-range default
 
-    const logCap = Math.log10(cap);
-    // Tiers: log10($5M)=6.7, log10($50M)=7.7, log10($500M)=8.7, log10($5B)=9.7, log10($50B)=10.7
-    if (logCap >= 10.7) return 300;       // >$50B
-    if (logCap >= 9.7) return Math.round(200 + (logCap - 9.7) * 100);  // $5B-$50B: 200-300
-    if (logCap >= 8.7) return Math.round(120 + (logCap - 8.7) * 80);   // $500M-$5B: 120-200
-    if (logCap >= 7.7) return Math.round(70 + (logCap - 7.7) * 50);    // $50M-$500M: 70-120
-    if (logCap >= 6.7) return Math.round(40 + (logCap - 6.7) * 30);    // $5M-$50M: 40-70
-    return 20;                             // <$5M
+    // Continuous logarithmic scale: HP = 30 * log10(marketCap) - 80
+    // Smooth curve, no tier cliffs. Examples:
+    //   $5M   (log10=6.7)  → ~121 HP
+    //   $80M  (log10=7.9)  → ~157 HP
+    //   $800M (log10=8.9)  → ~187 HP
+    //   $80B  (log10=10.9) → ~247 HP
+    //   $1.2T (log10=12.1) → ~283 HP
+    const hp = Math.round(30 * Math.log10(cap) - 80);
+    return Math.max(20, hp); // Floor at 20 for extremely small caps
   }
 
   /**

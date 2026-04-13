@@ -19,7 +19,6 @@ const COIN_COLORS = {
 };
 
 const MIXINS = [
-  Components.CanBeAttacked,
   Components.CanBeSpawned,
   Components.HasHealth,
   Components.HasShadow,
@@ -41,9 +40,6 @@ class TroopBase extends PhysicalEntity {
 
     const { scene } = config;
     this.scene = scene;
-
-    // Store animKeyPrefix for compatibility but don't play animations
-    this.animKeyPrefix = config.animKeyPrefix;
 
     const width = this.width;
     const height = this.height;

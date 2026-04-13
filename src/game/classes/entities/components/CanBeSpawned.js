@@ -9,12 +9,6 @@ class CanBeSpawned {
   }
 }
 
-CanBeSpawned.methods = {
-  spawn(x, y) {},
-
-  setCost(cost) {
-    this.cost = cost;
-  }
-};
+CanBeSpawned.methods = {};
 
 export default CanBeSpawned;

@@ -1,4 +1,3 @@
-import CanBeAttacked from "./CanBeAttacked.js";
 import CanBeSpawned from "./CanBeSpawned.js";
 import CanSpawn from "./CanSpawn.js";
 import CanWalk from "./CanWalk.js";
@@ -15,7 +14,6 @@ import HasEffects from "./effects/HasEffects.js";
 import HasDamageEffect from "./effects/HasDamageEffect.js";
 
 export default {
-  CanBeAttacked,
   CanBeSpawned,
   CanFly,
   CanSpawn,

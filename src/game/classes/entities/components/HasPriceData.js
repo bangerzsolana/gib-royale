@@ -49,8 +49,7 @@ HasPriceData.methods = {
    */
   recalculateStats() {
     const pct = this.priceChangePercent;
-    // Linear: 1 + (pct / 20), clamped between 0.25x and 3x
-    this.powerMultiplier = Math.max(0.25, Math.min(3, 1 + (pct / 20)));
+    this.powerMultiplier = 1 + (pct / 20);
 
     // Apply to damage output
     if (this.setDamageAmount) {

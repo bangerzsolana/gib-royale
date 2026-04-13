@@ -1,11 +1,9 @@
 import { Scene } from "phaser";
 
 import ControlledPlayer from "../classes/player/ControlledPlayer.js";
-import ComputerPlayer from "../classes/player/ComputerPlayer.js";
 
 import Components from "../classes/entities/components/index.js";
 
-import genAnims from "../helpers/generateAnimations.js";
 import genTerrain from "../helpers/generateTerrain.js";
 
 import { priceService } from "../services/PriceService.js";
@@ -19,9 +17,6 @@ export default class PlayScene extends Scene {
     try {
       // Start UIScene overlay
       this.scene.run("UIScene");
-
-      // Generate animations (no-op with circle UI)
-      genAnims(this);
 
       const gameWidth = this.game.config.width;
       const gameHeight = this.game.config.height;
@@ -51,11 +46,34 @@ export default class PlayScene extends Scene {
       // Start live price polling for the battle
       priceService.startPolling();
 
-      this.player = new ControlledPlayer(this);
-      this.opponent = new ComputerPlayer(this);
+      // 2-player mode: both sides are human-controlled
+      this.player = new ControlledPlayer(this, "bottom");
+      this.opponent = new ControlledPlayer(this, "top");
 
       this.player.setOpponent(this.opponent);
       this.opponent.setOpponent(this.player);
+
+      // Start with player 1 (bottom/blue) active; hide player 2's UI
+      this.activePlayer = this.player;
+      this.opponent.setActive(false);
+
+      // Active player indicator above card area
+      this.activeLabel = this.add
+        .text(gameWidth / 2, gameHeight - this.cardHolderHeight - 12, "P1 (BLUE) — Tab to switch", {
+          fontSize: "13px",
+          fontFamily: "Arial, sans-serif",
+          color: "#4488ff",
+          backgroundColor: "#000000",
+          padding: { x: 8, y: 4 }
+        })
+        .setOrigin(0.5, 1)
+        .setDepth(10002);
+
+      // Tab key toggles active player
+      this.input.keyboard.on("keydown-TAB", event => {
+        event.preventDefault();
+        this.toggleActivePlayer();
+      });
 
       // Opponent troops attacking player troops
       this.physics.add.overlap(
@@ -113,6 +131,20 @@ export default class PlayScene extends Scene {
     } catch (e) {
       console.error(e);
     }
+  }
+
+  toggleActivePlayer() {
+    this.activePlayer.setActive(false);
+
+    if (this.activePlayer === this.player) {
+      this.activePlayer = this.opponent;
+      this.activeLabel.setText("P2 (RED) — Tab to switch").setColor("#ff4444");
+    } else {
+      this.activePlayer = this.player;
+      this.activeLabel.setText("P1 (BLUE) — Tab to switch").setColor("#4488ff");
+    }
+
+    this.activePlayer.setActive(true);
   }
 
   update(time, delta) {}

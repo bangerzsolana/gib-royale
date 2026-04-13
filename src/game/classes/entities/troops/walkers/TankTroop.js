@@ -4,22 +4,19 @@ const MIXINS = [Components.CanWalk];
 
 class TankTroop extends Troop {
   constructor(config) {
-    super(MIXINS, { ...config, animKeyPrefix: STATIC.ANIM_KEY_PREFIX });
+    super(MIXINS, config);
     this.setMovementSpeed(5);
     this.setOverallHealth(200);
     this.setAttentionRange(100);
     this.setEffectRange(100);
     this.setEffectRate(3000);
     this.setDamageAmount(200);
-    this.setCost(6);
     this.setMaxVelocity(this.movementSpeed);
   }
 }
 
 const STATIC = TankTroop;
-STATIC.ANIM_KEY_PREFIX = "troop--tank";
 STATIC.NAME = "TankTroop";
-STATIC.IS_IN_DECK = true;
 STATIC.COST = 6;
 STATIC.doSpawn = function(config) { new TankTroop(config); };
 

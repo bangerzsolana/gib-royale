@@ -76,7 +76,7 @@ HasPriceData.methods = {
     const pct = this.priceChangePercent;
     const arrow = pct >= 0 ? "\u25B2" : "\u25BC"; // ▲ or ▼
     const color = pct >= 0 ? "#00ff00" : "#ff4444";
-    this.priceIndicator.setText(`${arrow} ${Math.abs(pct).toFixed(1)}%`);
+    this.priceIndicator.setText(`${arrow} ${Math.abs(pct).toFixed(4)}%`);
     this.priceIndicator.setColor(color);
   },
 

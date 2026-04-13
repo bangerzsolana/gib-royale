@@ -3,10 +3,10 @@ import { priceService } from "../../../services/PriceService.js";
 /**
  * HasPriceData component — the core mechanic that makes this game unique.
  *
- * Links a deployed troop to a real token's price action:
- * - Pumping tokens (positive % change) = higher attack power
- * - Dumping tokens (negative % change) = higher defense (damage reduction)
- * - % change is tracked from the moment of deployment (personal P&L)
+ * Links a deployed troop to a real token's price action.
+ * Price % change since deployment scales the troop's power:
+ * - Pumping = stronger (more damage dealt, less damage taken)
+ * - Dumping = weaker (less damage dealt, more damage taken)
  */
 class HasPriceData {
   constructor() {
@@ -19,8 +19,7 @@ class HasPriceData {
       baseMovementSpeed: 0, // Set at spawn from troop's hardcoded speed
       lastPriceUpdate: 0,
       priceUpdateInterval: 2000, // Update stats every 2 seconds
-      damageMultiplier: 1,
-      defenseMultiplier: 1,
+      powerMultiplier: 1, // Single multiplier from price action
       speedMultiplier: 1, // Market-cap-based: heavy coins move slower
       priceIndicator: null
     };
@@ -44,42 +43,18 @@ HasPriceData.methods = {
   },
 
   /**
-   * Recalculate attack/defense based on current price action.
-   *
-   * Pumping hard (>10%): Glass cannon — 2-3x damage, normal HP
-   * Steady green (1-10%): Balanced attacker — 1-2x damage
-   * Flat/crabbing (-1% to 1%): Utility — normal stats
-   * Dipping (-1% to -10%): Shield — 0.5x damage, 1.5-2x effective HP (defense)
-   * Dumping hard (<-10%): Fortress — 0.25x damage, 2-3x effective HP
+   * Recalculate power from price % change since deployment.
+   * Simple linear scale: +10% price = 1.5x power, -10% = 0.5x power.
+   * Power affects both damage dealt and damage taken.
    */
   recalculateStats() {
     const pct = this.priceChangePercent;
+    // Linear: 1 + (pct / 20), clamped between 0.25x and 3x
+    this.powerMultiplier = Math.max(0.25, Math.min(3, 1 + (pct / 20)));
 
-    if (pct > 10) {
-      // Pumping hard — glass cannon
-      this.damageMultiplier = 1 + (pct / 10);
-      this.defenseMultiplier = 0.8;
-    } else if (pct > 1) {
-      // Steady green — balanced attacker
-      this.damageMultiplier = 1 + (pct / 20);
-      this.defenseMultiplier = 1;
-    } else if (pct > -1) {
-      // Crabbing — neutral
-      this.damageMultiplier = 1;
-      this.defenseMultiplier = 1;
-    } else if (pct > -10) {
-      // Dipping — defender
-      this.damageMultiplier = 0.5;
-      this.defenseMultiplier = 1 + (Math.abs(pct) / 10);
-    } else {
-      // Dumping hard — fortress
-      this.damageMultiplier = 0.25;
-      this.defenseMultiplier = 1 + (Math.abs(pct) / 5);
-    }
-
-    // Apply damage multiplier
+    // Apply to damage output
     if (this.setDamageAmount) {
-      this.setDamageAmount(Math.round(this.baseDamage * this.damageMultiplier));
+      this.setDamageAmount(Math.round(this.baseDamage * this.powerMultiplier));
     }
   },
 
@@ -207,8 +182,6 @@ HasPriceData.methods = {
       this.priceIndicator.setPosition(this.x, this.y - this.height / 2 - 22);
     }
 
-    // Apply defense multiplier: reduce incoming damage
-    // This is handled by overriding deductHealth in the troop
   },
 
   _destroy() {

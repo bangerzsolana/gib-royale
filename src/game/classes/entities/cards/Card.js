@@ -121,8 +121,7 @@ class Card extends Phaser.GameObjects.Container {
     const power = tokenData.power || 0;
     const arrow = power >= 0 ? "▲" : "▼";
     const color = power >= 0 ? "#00ff44" : "#ff4444";
-    const label = power >= 0 ? "ATK" : "DEF";
-    this.priceIndicator.setText(`${arrow}${label} ${Math.abs(power).toFixed(1)}`);
+    this.priceIndicator.setText(`${arrow} ${Math.abs(power).toFixed(1)}%`);
     this.priceIndicator.setColor(color);
   }
 

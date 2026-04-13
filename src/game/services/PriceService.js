@@ -5,8 +5,8 @@
  * Uses the EMA-based power formula:
  *   power = ((price - emaPrice) / emaPrice) × (confidence / price) × POWER_SCALE
  *
- * Positive power = pumping = attacker
- * Negative power = dumping = defender
+ * Positive power = pumping = stronger
+ * Negative power = dumping = weaker
  */
 
 // Scaling factor: momentum × POWER_SCALE gives nice display numbers
@@ -461,7 +461,7 @@ class PriceService {
    * Calculate power score using price momentum:
    * power = ((price - emaPrice) / emaPrice) × POWER_SCALE
    *
-   * Positive = pumping = attacker, Negative = dumping = defender
+   * Positive = pumping = stronger, Negative = dumping = weaker
    * e.g. price 0.5% above EMA → power = +5.0
    */
   calcPower(symbol) {
@@ -500,7 +500,7 @@ class PriceService {
    *   Mid cap ($500M–$5B)       → Fighter — balanced stats
    *   Small/micro cap (<$500M)  → Glass Cannon — low HP, fast, high damage
    *
-   * Power (volatile) determines HOW the card FEELS right now (ATK/DEF boost),
+   * Power (volatile) determines HOW the card FEELS right now (stronger/weaker),
    * but role is tied to market cap so players can learn and remember card identities.
    */
   getTokenRole(symbol) {

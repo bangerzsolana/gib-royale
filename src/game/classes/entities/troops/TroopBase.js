@@ -85,10 +85,13 @@ class TroopBase extends PhysicalEntity {
     }
   }
 
-  // Override deductHealth to apply defense multiplier from HasPriceData
+  // Override deductHealth to apply power multiplier from HasPriceData
+  // Pumping = take less damage, dumping = take more damage
   deductHealth(amount) {
-    const reduced = Math.round(amount / (this.defenseMultiplier || 1));
-    this.currentHealth -= reduced;
+    const mult = this.powerMultiplier || 1;
+    // Inverse: higher power = less damage taken
+    const adjusted = Math.round(amount / mult);
+    this.currentHealth -= adjusted;
     this.updateHealthDisplay();
     this.checkIfDead();
   }

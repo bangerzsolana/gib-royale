@@ -1,16 +1,14 @@
 import Phaser from "phaser";
 import Tower from "../entities/environment/Tower.js";
-import Walkers from "../entities/troops/walkers/index.js";
+import COIN_DECK from "../../data/CoinDeck.js";
 
-// Fallback card types from all troop classes (used by ComputerPlayer)
-const cardTypes = [];
-for (const troopClass of Object.values(Walkers)) {
-  cardTypes.push({
-    name: troopClass.NAME,
-    cost: troopClass.COST,
-    doSpawn: troopClass.doSpawn
-  });
-}
+// Build card types from the coin deck — every card has a real troop class
+const cardTypes = COIN_DECK.map(entry => ({
+  name: entry.troopClass.NAME,
+  cost: entry.troopClass.COST,
+  doSpawn: entry.troopClass.doSpawn,
+  symbol: entry.symbol
+}));
 
 class Player {
   constructor(

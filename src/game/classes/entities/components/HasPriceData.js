@@ -42,18 +42,22 @@ HasPriceData.methods = {
   },
 
   /**
-   * Recalculate power from price % change since deployment.
-   * Scale factor 100: pct/100 so ±50 scaled pct = ±0.5x. Floor 0.1x.
-   * Power affects both damage dealt and damage taken.
+   * Recalculate effective ATK from price % change since deployment.
+   * ADDITIVE formula: effectiveATK = baseDamage + priceChangePercent
+   * Floor at 1 — can never deal zero damage.
+   * Example: base 15, +0.5% pump → priceChangePercent = 50 → ATK = 65
    */
   recalculateStats() {
     const pct = this.priceChangePercent;
-    this.powerMultiplier = Math.max(0.1, 1 + (pct / 100));
 
-    // Apply to damage output
+    // Additive ATK: base + scaled price change, floor 1
+    const effectiveATK = Math.max(1, Math.round(this.baseDamage + pct));
     if (this.setDamageAmount) {
-      this.setDamageAmount(Math.round(this.baseDamage * this.powerMultiplier));
+      this.setDamageAmount(effectiveATK);
     }
+
+    // Power multiplier still used for damage reduction on defense
+    this.powerMultiplier = Math.max(0.1, 1 + (pct / 100));
   },
 
   updatePriceIndicator() {
@@ -95,43 +99,41 @@ HasPriceData.methods = {
 
   /**
    * Apply data-driven combat stats from market data.
-   * HP from market cap (logarithmic scale).
-   * Only marks as applied when real market cap data is available.
+   * HP = 30 × log₁₀(marketCap) - 80, floor 20, fallback 80.
+   * Base damage = flat 15 for all troops.
+   * Always applies — no guards. The formula handles missing data via fallback.
    */
   applyMarketStats() {
     if (!this.tokenId) return;
     const stats = priceService.getCombatStats(this.tokenId);
-    if (!stats) return;
 
-    // Only apply HP if we have real market cap data (not the fallback)
-    if (stats.marketCap > 0 && stats.hp && this.setOverallHealth) {
-      this.baseHealth = stats.hp;
-      this.setOverallHealth(stats.hp);
+    // If token not found at all, apply fallback HP (80) and base damage (15)
+    const rawHp = stats ? stats.hp : 80;
+    const damage = stats ? stats.damage : 15;
+
+    // Apply HP divisor for multi-unit types (Flyer ÷3, Swarm ÷5, SpawnerChild ÷8)
+    const divisor = this.hpDivisor || 1;
+    const hp = Math.max(1, Math.round(rawHp / divisor));
+
+    if (this.setOverallHealth) {
+      this.baseHealth = hp;
+      this.setOverallHealth(hp);
     }
 
-    // Base damage (flat 15 for now)
-    if (stats.damage) {
-      this.baseDamage = stats.damage;
-      if (this.setDamageAmount) {
-        this.setDamageAmount(Math.round(this.baseDamage * this.powerMultiplier));
-      }
+    this.baseDamage = damage;
+    if (this.setDamageAmount) {
+      const effectiveATK = Math.max(1, Math.round(this.baseDamage + this.priceChangePercent));
+      this.setDamageAmount(effectiveATK);
     }
 
-    // Only mark as applied when we actually have market cap data
-    if (stats.marketCap > 0) {
-      this._marketStatsApplied = true;
-    }
+    this._marketStatsApplied = true;
   },
 
   _init() {
-    // Store hardcoded troop stats as initial fallback
-    if (this.damageAmount) this.baseDamage = this.damageAmount;
-    if (this.overallHealth) this.baseHealth = this.overallHealth;
-
     this._marketStatsApplied = false;
 
     // Use the card's spawn price if passed through from the card (set before _init runs).
-    // Only snapshot current price if no spawn price was provided (e.g., computer player troops).
+    // Only snapshot current price if no spawn price was provided.
     if (this.tokenId) {
       if (!this.deployPrice) {
         const tokenData = priceService.getTokenWithPower(this.tokenId);
@@ -139,6 +141,7 @@ HasPriceData.methods = {
           this.deployPrice = tokenData.price;
         }
       }
+      // Always apply market stats — this is the ONLY source of HP and damage
       this.applyMarketStats();
     }
   },

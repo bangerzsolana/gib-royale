@@ -55,7 +55,8 @@ class TroopBase extends PhysicalEntity {
     this.owner = config.owner;
     this.velocityDirection = config.velocityDirection;
 
-    this.setOverallHealth(100);
+    // HP is set by HasPriceData.applyMarketStats() from market cap data.
+    // No hardcoded default — the formula (or its fallback of 80) is the only source.
 
     // Apply coin color tint and store it for later restoration (e.g. after moon buff)
     if (config.tokenId && COIN_COLORS[config.tokenId]) {

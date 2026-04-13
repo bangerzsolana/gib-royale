@@ -4,42 +4,64 @@ import ManaBank from "../ManaBank.js";
 
 export default class ControlledPlayer extends Player {
   constructor(scene, side = "bottom") {
-    const worldWidth = scene.physics.world.bounds.width;
-    const worldHeight = scene.physics.world.bounds.height;
+    const bounds = scene.physics.world.bounds;
+    const worldY = bounds.y;
+    const worldWidth = bounds.width;
+    const worldHeight = bounds.height;
     const halfWorldWidth = worldWidth / 2;
     const halfWorldHeight = worldHeight / 2;
 
     const isTop = side === "top";
-    const spawnZoneY = isTop ? 0 : halfWorldHeight;
-    const towerY = isTop ? 100 : worldHeight - 40;
+    const spawnZoneY = isTop ? worldY : worldY + halfWorldHeight;
+    const towerY = isTop ? worldY + 100 : worldY + worldHeight - 40;
     const velocityDirection = isTop ? 1 : -1;
 
     super(scene, 0, spawnZoneY, halfWorldWidth, towerY, velocityDirection);
 
     this.side = side;
 
-    // ManaBank — both render at bottom card area position
     const gameWidth = scene.game.config.width;
     const gameHeight = scene.game.config.height;
+
+    // Position mana bar and card area based on side
+    const manaBarY = isTop
+      ? scene.topCardHolderHeight - 16
+      : gameHeight - scene.cardHolderHeight - 16;
+
+    const cardAreaY = isTop ? 0 : gameHeight - scene.cardHolderHeight;
+
     this.manaBank = new ManaBank(
       scene,
       gameWidth / 2,
-      gameHeight - scene.cardHolderHeight - 16,
+      manaBarY,
       gameWidth - 40,
       28
     );
 
-    // Player cards and UI — both at bottom of screen, toggled by Tab
     this.cardArea = new CardArea(
       scene,
       0,
-      gameHeight - scene.cardHolderHeight,
+      cardAreaY,
       scene.cardHolderWidth,
       scene.cardHolderHeight,
       this.manaBank
     );
 
-    // Handle the player clicking on the play area
+    // Player label on the card area
+    const labelText = isTop ? "P2 (RED)" : "P1 (BLUE)";
+    const labelColor = isTop ? "#ff4444" : "#4488ff";
+    const labelY = isTop ? 8 : gameHeight - scene.cardHolderHeight + 8;
+    scene.add
+      .text(gameWidth - 8, labelY, labelText, {
+        fontSize: "12px",
+        fontFamily: "Arial, sans-serif",
+        color: labelColor,
+        fontStyle: "bold"
+      })
+      .setOrigin(1, 0)
+      .setDepth(10002);
+
+    // Handle click on spawn zone to deploy
     this.spawnZone
       .setInteractive({ useHandCursor: true })
       .on("pointerdown", pointer => {
@@ -61,7 +83,6 @@ export default class ControlledPlayer extends Player {
         );
 
         if (spawnedTroop) {
-          if (this.opponent) this.opponent.spawnZoneOverlay.setAlpha(0);
           playerCardHand.drawNextCard();
           playerCardHand.deselectAll();
         }
@@ -71,17 +92,10 @@ export default class ControlledPlayer extends Player {
   setOpponent(opponent) {
     super.setOpponent(opponent);
     if (this.cardArea && this.cardArea.hand) {
-      this.cardArea.hand.opponentOverlay = opponent.spawnZoneOverlay;
-    }
-  }
-
-  setActive(active) {
-    this.cardArea.setVisible(active);
-    if (this.manaBank.displayBar) {
-      this.manaBank.displayBar.setVisible(active);
-    }
-    if (!active) {
-      this.cardArea.hand.deselectAll();
+      // Show own spawn zone when selecting a card
+      this.cardArea.hand.spawnOverlay = this.spawnZoneOverlay;
+      // Cross-deselect: selecting from one hand deselects the other
+      this.cardArea.hand.siblingHand = opponent.cardArea.hand;
     }
   }
 

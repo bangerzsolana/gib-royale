@@ -22,15 +22,15 @@ export default class PlayScene extends Scene {
       const gameHeight = this.game.config.height;
 
       this.cardHolderWidth = gameWidth;
-      this.cardHolderHeight = 240;
+      this.cardHolderHeight = 180;
+      this.topCardHolderHeight = 180;
 
-      // Set physics world size (exclude card holder area)
-      this.physics.world.setBounds(
-        0,
-        0,
-        gameWidth,
-        gameHeight - this.cardHolderHeight
-      );
+      // Field area between the two card areas
+      const fieldY = this.topCardHolderHeight;
+      const fieldHeight = gameHeight - this.topCardHolderHeight - this.cardHolderHeight;
+
+      // Set physics world size (field area only)
+      this.physics.world.setBounds(0, fieldY, gameWidth, fieldHeight);
 
       this.camera = this.cameras.main;
       this.camera.setBounds(0, 0, gameWidth, gameHeight);
@@ -38,42 +38,20 @@ export default class PlayScene extends Scene {
       // Reset from previous rounds
       Components.HasDestructionParticles.particles = null;
 
-      // Create clean background (green field)
+      // Create clean background (green field only)
       this.add
-        .rectangle(gameWidth / 2, (gameHeight - this.cardHolderHeight) / 2, gameWidth, gameHeight - this.cardHolderHeight, 0x2d5a27)
+        .rectangle(gameWidth / 2, fieldY + fieldHeight / 2, gameWidth, fieldHeight, 0x2d5a27)
         .setOrigin(0.5, 0.5);
 
       // Start live price polling for the battle
       priceService.startPolling();
 
-      // 2-player mode: both sides are human-controlled
+      // 2-player mode: both card areas visible simultaneously
       this.player = new ControlledPlayer(this, "bottom");
       this.opponent = new ControlledPlayer(this, "top");
 
       this.player.setOpponent(this.opponent);
       this.opponent.setOpponent(this.player);
-
-      // Start with player 1 (bottom/blue) active; hide player 2's UI
-      this.activePlayer = this.player;
-      this.opponent.setActive(false);
-
-      // Active player indicator above card area
-      this.activeLabel = this.add
-        .text(gameWidth / 2, gameHeight - this.cardHolderHeight - 12, "P1 (BLUE) — Tab to switch", {
-          fontSize: "13px",
-          fontFamily: "Arial, sans-serif",
-          color: "#4488ff",
-          backgroundColor: "#000000",
-          padding: { x: 8, y: 4 }
-        })
-        .setOrigin(0.5, 1)
-        .setDepth(10002);
-
-      // Tab key toggles active player
-      this.input.keyboard.on("keydown-TAB", event => {
-        event.preventDefault();
-        this.toggleActivePlayer();
-      });
 
       // Opponent troops attacking player troops
       this.physics.add.overlap(
@@ -131,20 +109,6 @@ export default class PlayScene extends Scene {
     } catch (e) {
       console.error(e);
     }
-  }
-
-  toggleActivePlayer() {
-    this.activePlayer.setActive(false);
-
-    if (this.activePlayer === this.player) {
-      this.activePlayer = this.opponent;
-      this.activeLabel.setText("P2 (RED) — Tab to switch").setColor("#ff4444");
-    } else {
-      this.activePlayer = this.player;
-      this.activeLabel.setText("P1 (BLUE) — Tab to switch").setColor("#4488ff");
-    }
-
-    this.activePlayer.setActive(true);
   }
 
   update(time, delta) {}

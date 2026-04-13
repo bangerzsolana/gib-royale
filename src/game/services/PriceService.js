@@ -373,26 +373,6 @@ class PriceService {
   }
 
   /**
-   * Calculate speed multiplier from market cap.
-   * Higher market cap = heavier = slower.
-   *
-   * Uses log10 scale:
-   *   $100K cap → 1.4x (zippy micro-cap)
-   *   $1B cap   → 1.0x (baseline)
-   *   $100B cap → 0.6x (heavy mega-cap)
-   */
-  getSpeedMultiplier(symbol) {
-    const cap = this.getMarketCap(symbol);
-    if (!cap || cap <= 0) return 1; // No data → normal speed
-
-    const logCap = Math.log10(cap);
-    // Clamp between 5 (100K) and 11 (100B)
-    const normalized = Math.max(0, Math.min(1, (logCap - 5) / 6));
-    // 1.4 at low cap, 0.6 at high cap
-    return 1.4 - (normalized * 0.8);
-  }
-
-  /**
    * Calculate base HP from market cap using continuous logarithmic scale.
    * HP = 30 * log10(marketCap) - 80
    * Bigger coins = more health, but log compression prevents mega-caps
@@ -423,22 +403,15 @@ class PriceService {
    *   5-15%           → 15 base damage (medium volatility)
    *   <5%             → 8 base damage  (stable / low volatility)
    *
-   * Uses continuous scale for smooth transitions.
+   * TODO: Replace with proper formula (awaiting design decision).
    */
   getBaseDamage(symbol) {
-    const token = this.tokens[symbol];
-    if (!token) return 12; // No data → moderate default
-
-    const volatility = Math.abs(token.change7d || 0);
-    if (volatility >= 30) return 40;
-    if (volatility >= 15) return Math.round(25 + (volatility - 15) / 15 * 15); // 25-40
-    if (volatility >= 5)  return Math.round(15 + (volatility - 5) / 10 * 10);  // 15-25
-    return Math.round(8 + volatility / 5 * 7);                                 // 8-15
+    return 15; // Flat default — awaiting instructions for real formula
   }
 
   /**
    * Get full market-driven combat stats for a coin.
-   * Returns { hp, damage, speedMultiplier } or null if no data.
+   * Returns { hp, damage } or null if no data.
    */
   getCombatStats(symbol) {
     const token = this.tokens[symbol];
@@ -446,9 +419,7 @@ class PriceService {
     return {
       hp: this.getBaseHP(symbol),
       damage: this.getBaseDamage(symbol),
-      speedMultiplier: this.getSpeedMultiplier(symbol),
       marketCap: token.marketCap || 0,
-      volatility: Math.abs(token.change7d || 0),
     };
   }
 

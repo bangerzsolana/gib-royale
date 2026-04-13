@@ -20,7 +20,6 @@ class HasPriceData {
       lastPriceUpdate: 0,
       priceUpdateInterval: 2000, // Update stats every 2 seconds
       powerMultiplier: 1, // Single multiplier from price action
-      speedMultiplier: 1, // Market-cap-based: heavy coins move slower
       priceIndicator: null
     };
 
@@ -44,12 +43,12 @@ HasPriceData.methods = {
 
   /**
    * Recalculate power from price % change since deployment.
-   * Simple linear scale: +10% price = 1.5x power, -10% = 0.5x power.
+   * Scale factor 100: pct/100 so ±50 scaled pct = ±0.5x. Floor 0.1x.
    * Power affects both damage dealt and damage taken.
    */
   recalculateStats() {
     const pct = this.priceChangePercent;
-    this.powerMultiplier = 1 + (pct / 20);
+    this.powerMultiplier = Math.max(0.1, 1 + (pct / 100));
 
     // Apply to damage output
     if (this.setDamageAmount) {
@@ -118,9 +117,6 @@ HasPriceData.methods = {
       }
     }
 
-    // Speed from inverse market cap (already handled by applySpeedFromMarketCap)
-    this.applySpeedFromMarketCap();
-
     this._marketStatsApplied = true;
   },
 
@@ -128,7 +124,6 @@ HasPriceData.methods = {
     // Store hardcoded troop stats as initial fallback
     if (this.damageAmount) this.baseDamage = this.damageAmount;
     if (this.overallHealth) this.baseHealth = this.overallHealth;
-    if (this.movementSpeed) this.baseMovementSpeed = this.movementSpeed;
 
     this._marketStatsApplied = false;
 
@@ -145,22 +140,6 @@ HasPriceData.methods = {
     }
   },
 
-  /**
-   * Adjust movement speed based on market cap.
-   * Higher market cap = heavier = slower movement.
-   */
-  applySpeedFromMarketCap() {
-    const mult = priceService.getSpeedMultiplier(this.tokenId);
-    if (mult !== this.speedMultiplier && this.baseMovementSpeed) {
-      this.speedMultiplier = mult;
-      const newSpeed = Math.round(this.baseMovementSpeed * this.speedMultiplier);
-      if (this.setMovementSpeed) {
-        this.setMovementSpeed(newSpeed);
-        // Also update max velocity to match
-        if (this.setMaxVelocity) this.setMaxVelocity(newSpeed, newSpeed);
-      }
-    }
-  },
 
   _preUpdate(time, delta) {
     // Periodically fetch updated price data
@@ -191,8 +170,6 @@ HasPriceData.methods = {
         this.recalculateStats();
         this.updatePriceIndicator();
 
-        // Update speed from market cap (data may arrive after spawn)
-        this.applySpeedFromMarketCap();
       }
     }
 

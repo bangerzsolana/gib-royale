@@ -57,7 +57,7 @@ class Player {
     ]);
 
     this.spawnZone = scene.add
-      .zone(spawnZoneX, spawnZoneY, worldWidth, halfWorldHeight, 0xff0000, 0)
+      .zone(spawnZoneX, spawnZoneY, worldWidth, halfWorldHeight)
       .setOrigin(0, 0);
 
     this.spawnZoneOverlay = scene.add
@@ -66,7 +66,7 @@ class Player {
         spawnZoneY,
         worldWidth,
         halfWorldHeight,
-        0xff0000,
+        0x44ff88,
         1
       )
       .setOrigin(0, 0)

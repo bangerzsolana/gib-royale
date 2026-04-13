@@ -8,7 +8,8 @@ class Hand extends Phaser.GameObjects.Container {
     this.cardSource = cardSource;
     this.manaBank = manaBank;
     this.selectedCardSlot = null;
-    this.opponentOverlay = null; // Set by ControlledPlayer.setOpponent()
+    this.spawnOverlay = null;   // Player's own spawn zone overlay
+    this.siblingHand = null;    // Other player's hand (for cross-deselection)
 
     scene.add.existing(this).setDepth(10000);
 
@@ -58,15 +59,20 @@ class Hand extends Phaser.GameObjects.Container {
     this.slots.forEach(slot => {
       slot.deselect();
     });
-    // Hide spawn overlay when nothing selected
-    if (this.opponentOverlay) {
-      this.opponentOverlay.setAlpha(0);
+    // Hide own spawn overlay when nothing selected
+    if (this.spawnOverlay) {
+      this.spawnOverlay.setAlpha(0);
     }
   }
 
   setSelectedCardSlot(cardSlot) {
-    if (this.opponentOverlay) {
-      this.opponentOverlay.setAlpha(0.5);
+    // Cross-deselect: deselect the other player's hand
+    if (this.siblingHand) {
+      this.siblingHand.deselectAll();
+    }
+    // Show own spawn zone overlay
+    if (this.spawnOverlay) {
+      this.spawnOverlay.setAlpha(0.3);
     }
     this.selectedCardSlot = cardSlot;
   }

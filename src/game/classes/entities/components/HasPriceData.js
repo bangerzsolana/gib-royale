@@ -61,8 +61,8 @@ HasPriceData.methods = {
   updatePriceIndicator() {
     if (!this.priceIndicator) {
       this.priceIndicator = this.scene.add
-        .text(this.x, this.y - this.height - 28, "", {
-          fontSize: "16px",
+        .text(this.x, this.y + 20, "", {
+          fontSize: "14px",
           fontFamily: "Arial, sans-serif",
           fontStyle: "bold",
           color: "#00ff00",
@@ -70,7 +70,7 @@ HasPriceData.methods = {
           strokeThickness: 3
         })
         .setOrigin(0.5, 0.5)
-        .setDepth(999998);
+        .setDepth(999999); // Top layer — nothing covers this
     }
 
     const pct = this.priceChangePercent;
@@ -179,7 +179,7 @@ HasPriceData.methods = {
 
     // Keep price indicator following the troop
     if (this.priceIndicator && !this.isDestroyed) {
-      this.priceIndicator.setPosition(this.x, this.y - this.height / 2 - 48);
+      this.priceIndicator.setPosition(this.x, this.y + 20);
     }
 
   },

@@ -3,13 +3,19 @@ import PhysicalEntity from "../PhysicalEntity.js";
 
 // Default coin colors — looked up by tokenId at spawn time
 const COIN_COLORS = {
-  // Tanks (mega-cap)
+  // Blue chips
   BTC: 0xf7931a, ETH: 0x627eea, SOL: 0x14f195,
-  // Fighters (mid-cap)
-  BONK: 0xf7931a, WIF: 0x9945ff, TRUMP: 0xff4444, FARTCOIN: 0x44bb44,
-  POPCAT: 0xff69b4, MOODENG: 0x00ccff, PNUT: 0xddaa44,
-  // Glass Cannons (small-cap)
-  FWOG: 0x44bb44, RETARDIO: 0xcc3333, WEN: 0x9944cc, SEND: 0x3388dd
+  // Big memes
+  BONK: 0xf7931a, WIF: 0x8993eb, TRUMP: 0xcc2222, POPCAT: 0xff69b4,
+  FARTCOIN: 0x88cc44,
+  // Mid memes
+  FWOG: 0x44bb44, RETARDIO: 0xcc3333, WEN: 0x9944cc, SEND: 0x3388dd,
+  PNUT: 0xddaa44, MOODENG: 0x00ccff, MELANIA: 0xff66aa, VINE: 0x00b488,
+  // DeFi / Infra
+  RAY: 0x5c6bc0, RENDER: 0x00e5ff, PYTH: 0x7b61ff, ORCA: 0xffcc00,
+  GRASS: 0x66bb6a, VIRTUAL: 0x8e24aa, JTO: 0xef6c00, LINK: 0x2962ff,
+  // AI / Social
+  AIXBT: 0x1a237e, GRIFFAIN: 0xffa726, PUMP: 0x00c853, SPX: 0xd32f2f
 };
 
 const MIXINS = [

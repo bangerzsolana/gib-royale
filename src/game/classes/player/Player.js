@@ -40,21 +40,23 @@ class Player {
     this.attentionAreas = scene.physics.add.group();
 
     this.towers = scene.physics.add.staticGroup();
-    this.towers.addMultiple([
-      new Tower(scene, this, towerX, towerY),
-      new Tower(
-        scene,
-        this,
-        towerX - 220,
-        towerY + 70 * this.troopVelocityDirection
-      ),
-      new Tower(
-        scene,
-        this,
-        towerX + 220,
-        towerY + 70 * this.troopVelocityDirection
-      )
-    ]);
+    const centerTower = new Tower(scene, this, towerX, towerY);
+    const leftTower = new Tower(
+      scene,
+      this,
+      towerX - 220,
+      towerY + 70 * this.troopVelocityDirection
+    );
+    const rightTower = new Tower(
+      scene,
+      this,
+      towerX + 220,
+      towerY + 70 * this.troopVelocityDirection
+    );
+    // Side towers have 500 HP, center tower keeps 1000
+    leftTower.setOverallHealth(500);
+    rightTower.setOverallHealth(500);
+    this.towers.addMultiple([centerTower, leftTower, rightTower]);
 
     this.spawnZone = scene.add
       .zone(spawnZoneX, spawnZoneY, worldWidth, halfWorldHeight)

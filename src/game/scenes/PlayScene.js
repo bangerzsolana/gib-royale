@@ -24,10 +24,11 @@ export default class PlayScene extends Scene {
       this.cardHolderWidth = gameWidth;
       this.cardHolderHeight = 130;
       this.topCardHolderHeight = 130;
+      this.manaBarHeight = 30; // dedicated space for mana bar between cards and field
 
-      // Field area between the two card areas
-      const fieldY = this.topCardHolderHeight;
-      const fieldHeight = gameHeight - this.topCardHolderHeight - this.cardHolderHeight;
+      // Field area between the two card areas (with mana bar gaps)
+      const fieldY = this.topCardHolderHeight + this.manaBarHeight;
+      const fieldHeight = gameHeight - this.topCardHolderHeight - this.cardHolderHeight - this.manaBarHeight * 2;
 
       // Set physics world size (field area only)
       this.physics.world.setBounds(0, fieldY, gameWidth, fieldHeight);

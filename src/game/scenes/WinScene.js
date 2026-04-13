@@ -11,8 +11,8 @@ class WinScene extends Scene {
     const centerY = this.cameras.main.centerY;
 
     this.add
-      .text(centerX, centerY - 40, "You Win!", {
-        fontSize: "36px",
+      .text(centerX, centerY - 80, "You Win!", {
+        fontSize: "72px",
         fontFamily: "Arial, sans-serif",
         fontStyle: "bold",
         color: "#44ff44"
@@ -20,8 +20,8 @@ class WinScene extends Scene {
       .setOrigin(0.5, 0.5);
 
     this.add
-      .text(centerX, centerY + 20, "Tap to play again", {
-        fontSize: "16px",
+      .text(centerX, centerY + 40, "Tap to play again", {
+        fontSize: "32px",
         fontFamily: "Arial, sans-serif",
         color: "#aaccaa"
       })

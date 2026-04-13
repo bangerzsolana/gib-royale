@@ -9,7 +9,7 @@ export default class ControlledPlayer extends Player {
     const halfWorldWidth = worldWidth / 2;
     const halfWorldHeight = worldHeight / 2;
 
-    super(scene, 0, halfWorldHeight, halfWorldWidth, worldHeight - 20, -1);
+    super(scene, 0, halfWorldHeight, halfWorldWidth, worldHeight - 40, -1);
 
     // ManaBank
     const gameWidth = scene.game.config.width;
@@ -17,9 +17,9 @@ export default class ControlledPlayer extends Player {
     this.manaBank = new ManaBank(
       scene,
       gameWidth / 2,
-      gameHeight - scene.cardHolderHeight - 8,
-      gameWidth - 20,
-      14
+      gameHeight - scene.cardHolderHeight - 16,
+      gameWidth - 40,
+      28
     );
 
     // Player cards and UI

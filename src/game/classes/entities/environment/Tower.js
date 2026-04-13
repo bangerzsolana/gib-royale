@@ -28,28 +28,28 @@ export default class Tower extends EnvironmentObject {
 
     this.setOverallHealth(1000);
 
-    this.setAttentionRange(80);
-    this.setEffectRange(90);
+    this.setAttentionRange(160);
+    this.setEffectRange(180);
     this.setEffectRate(1500);
 
     this.setDamageAmount(20);
 
     this.waypoints = [
-      new Waypoint(scene, x - 30, y - 15, "tower"),
-      new Waypoint(scene, x + 30, y - 15, "tower"),
-      new Waypoint(scene, x - 30, y + 15, "tower"),
-      new Waypoint(scene, x + 30, y + 15, "tower")
+      new Waypoint(scene, x - 60, y - 30, "tower"),
+      new Waypoint(scene, x + 60, y - 30, "tower"),
+      new Waypoint(scene, x - 60, y + 30, "tower"),
+      new Waypoint(scene, x + 60, y + 30, "tower")
     ];
 
     // Add tower label
     this.towerLabel = scene.add
-      .text(x, y + 2, "TOWER", {
-        fontSize: "8px",
+      .text(x, y + 4, "TOWER", {
+        fontSize: "16px",
         fontFamily: "Arial, sans-serif",
         color: "#ffffff",
         fontStyle: "bold",
         stroke: "#000000",
-        strokeThickness: 2
+        strokeThickness: 4
       })
       .setOrigin(0.5, 0.5)
       .setDepth(999996);

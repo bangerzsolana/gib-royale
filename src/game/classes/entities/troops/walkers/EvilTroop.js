@@ -7,8 +7,8 @@ class EvilTroop extends Troop {
     super(MIXINS, { ...config, animKeyPrefix: STATIC.ANIM_KEY_PREFIX });
     this.setMovementSpeed(10);
     this.setOverallHealth(200);
-    this.setAttentionRange(50);
-    this.setEffectRange(20);
+    this.setAttentionRange(100);
+    this.setEffectRange(40);
     this.setEffectRate(1500);
     this.setDamageAmount(20);
     this.setCost(3);

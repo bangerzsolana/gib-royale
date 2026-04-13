@@ -32,12 +32,12 @@ HasHealth.methods = {
   initHealthBar() {
     this.healthDisplay = this.scene.add
       .text(this.x, this.y, this.currentHealth, {
-        fontSize: "10px",
+        fontSize: "20px",
         fontFamily: "Arial, sans-serif",
         color: "#ffffff",
         fontStyle: "bold",
         stroke: "#000000",
-        strokeThickness: 2
+        strokeThickness: 4
       })
       .setOrigin(0.5, 0.5)
       .setDepth(999999);
@@ -57,7 +57,7 @@ HasHealth.methods = {
 
   _preUpdate() {
     if (this.healthDisplay)
-      this.healthDisplay.setPosition(this.x, this.y - this.height / 2 - 12);
+      this.healthDisplay.setPosition(this.x, this.y - this.height / 2 - 24);
   },
 
   _destroy() {

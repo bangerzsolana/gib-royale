@@ -7,8 +7,8 @@ class TankTroop extends Troop {
     super(MIXINS, { ...config, animKeyPrefix: STATIC.ANIM_KEY_PREFIX });
     this.setMovementSpeed(5);
     this.setOverallHealth(200);
-    this.setAttentionRange(50);
-    this.setEffectRange(50);
+    this.setAttentionRange(100);
+    this.setEffectRange(100);
     this.setEffectRate(3000);
     this.setDamageAmount(200);
     this.setCost(6);

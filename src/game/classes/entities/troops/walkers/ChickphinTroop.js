@@ -7,8 +7,8 @@ class ChickphinTroop extends Troop {
     super(MIXINS, { ...config, animKeyPrefix: STATIC.ANIM_KEY_PREFIX });
     this.setMovementSpeed(8);
     this.setOverallHealth(200);
-    this.setAttentionRange(40);
-    this.setEffectRange(20);
+    this.setAttentionRange(80);
+    this.setEffectRange(40);
     this.setEffectRate(1500);
     this.setDamageAmount(50);
     this.setCost(3);

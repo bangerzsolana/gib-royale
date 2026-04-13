@@ -7,8 +7,8 @@ class BattleOtterTroop extends Troop {
     super(MIXINS, { ...config, animKeyPrefix: STATIC.ANIM_KEY_PREFIX });
     this.setMovementSpeed(15);
     this.setOverallHealth(50);
-    this.setAttentionRange(40);
-    this.setEffectRange(30);
+    this.setAttentionRange(80);
+    this.setEffectRange(60);
     this.setEffectRate(1000);
     this.setDamageAmount(20);
     this.setCost(3);

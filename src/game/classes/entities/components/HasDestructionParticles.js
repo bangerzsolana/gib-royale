@@ -12,16 +12,16 @@ HasDestructionParticles.methods = {
     if (!HasDestructionParticles.particles) {
       HasDestructionParticles.particles = this.scene.add.particles("particle-rect", [
         {
-          x: { min: -15, max: 15 },
-          y: { min: -15, max: 15 },
+          x: { min: -30, max: 30 },
+          y: { min: -30, max: 30 },
           scale: 0.5,
           tint: 0xff7777,
           blendMode: "ADD",
           lifespan: 1500,
-          speedX: { min: -30, max: 30 },
-          speedY: { min: -15, max: -60 },
+          speedX: { min: -60, max: 60 },
+          speedY: { min: -30, max: -120 },
           accelerationX: 0,
-          accelerationY: 50,
+          accelerationY: 100,
           on: false,
           quantity: 6
         }

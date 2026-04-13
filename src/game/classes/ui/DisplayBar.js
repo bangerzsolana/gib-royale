@@ -33,7 +33,7 @@ export default class DisplayBar extends Phaser.GameObjects.Container {
     // value text display
     this.text = scene.add
       .text(0, 0, value, {
-        fontSize: "12px",
+        fontSize: "24px",
         fontFamily: "Arial, sans-serif",
         color: "#ffffff",
         fontStyle: "bold"

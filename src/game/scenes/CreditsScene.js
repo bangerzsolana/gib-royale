@@ -27,8 +27,8 @@ export default class CreditsScene extends Scene {
     let centerX = this.cameras.main.centerX;
 
     this.add
-      .text(centerX, 30, "Credits", {
-        fontSize: "24px",
+      .text(centerX, 60, "Credits", {
+        fontSize: "48px",
         fontFamily: "Arial, sans-serif",
         fontStyle: "bold",
         color: "#ffffff"
@@ -36,18 +36,18 @@ export default class CreditsScene extends Scene {
       .setOrigin(0.5, 0.5);
 
     this.add
-      .text(centerX, 70, CREDITS_STRING, {
-        fontSize: "14px",
+      .text(centerX, 140, CREDITS_STRING, {
+        fontSize: "28px",
         fontFamily: "Arial, sans-serif",
         color: "#cccccc",
         align: "center",
-        lineSpacing: 4
+        lineSpacing: 8
       })
       .setOrigin(0.5, 0);
 
     this.add
-      .text(centerX, this.cameras.main.height - 30, "Tap to close", {
-        fontSize: "12px",
+      .text(centerX, this.cameras.main.height - 60, "Tap to close", {
+        fontSize: "24px",
         fontFamily: "Arial, sans-serif",
         color: "#888888"
       })

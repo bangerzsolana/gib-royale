@@ -7,8 +7,8 @@ class MagicPuppyTroop extends Troop {
     super(MIXINS, { ...config, animKeyPrefix: STATIC.ANIM_KEY_PREFIX });
     this.setMovementSpeed(17);
     this.setOverallHealth(50);
-    this.setAttentionRange(60);
-    this.setEffectRange(50);
+    this.setAttentionRange(120);
+    this.setEffectRange(100);
     this.setEffectRate(1000);
     this.setDamageAmount(10);
     this.setCost(4);

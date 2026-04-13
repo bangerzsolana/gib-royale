@@ -5,8 +5,8 @@ class CardSlot extends Phaser.GameObjects.Container {
     super(scene, x, y);
 
     this.hand = hand;
-    this.width = 72;
-    this.height = 90;
+    this.width = 144;
+    this.height = 180;
     this.originalY = y;
 
     this.card = null;
@@ -40,7 +40,7 @@ class CardSlot extends Phaser.GameObjects.Container {
   insertCard(card) {
     if (this.card) this.removeCard();
     this.card = card;
-    this.card.setPosition(2, 2);
+    this.card.setPosition(4, 4);
     this.add(card);
     // Keep dim overlay on top
     this.bringToTop(this.dimOverlay);
@@ -67,7 +67,7 @@ class CardSlot extends Phaser.GameObjects.Container {
   select() {
     this.hand.deselectAll();
     this.isSelected = true;
-    this.y = this.originalY - 8;
+    this.y = this.originalY - 16;
     this.background.setFillStyle(0x445588);
     this.background.setStrokeStyle(2, 0x88bbff);
     this.hand.setSelectedCardSlot(this);

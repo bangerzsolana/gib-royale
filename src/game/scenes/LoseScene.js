@@ -11,8 +11,8 @@ class LoseScene extends Scene {
     const centerY = this.cameras.main.centerY;
 
     this.add
-      .text(centerX, centerY - 40, "You Lose", {
-        fontSize: "36px",
+      .text(centerX, centerY - 80, "You Lose", {
+        fontSize: "72px",
         fontFamily: "Arial, sans-serif",
         fontStyle: "bold",
         color: "#ff4444"
@@ -20,8 +20,8 @@ class LoseScene extends Scene {
       .setOrigin(0.5, 0.5);
 
     this.add
-      .text(centerX, centerY + 20, "Tap to try again", {
-        fontSize: "16px",
+      .text(centerX, centerY + 40, "Tap to try again", {
+        fontSize: "32px",
         fontFamily: "Arial, sans-serif",
         color: "#ccaaaa"
       })

@@ -7,8 +7,8 @@ class DinoTroop extends Troop {
     super(MIXINS, { ...config, animKeyPrefix: STATIC.ANIM_KEY_PREFIX });
     this.setMovementSpeed(20);
     this.setOverallHealth(30);
-    this.setAttentionRange(20);
-    this.setEffectRange(20);
+    this.setAttentionRange(40);
+    this.setEffectRange(40);
     this.setEffectRate(500);
     this.setDamageAmount(10);
     this.setCost(1);

@@ -7,8 +7,8 @@ class ZDogTroop extends Troop {
     super(MIXINS, { ...config, animKeyPrefix: STATIC.ANIM_KEY_PREFIX });
     this.setMovementSpeed(10);
     this.setOverallHealth(40);
-    this.setAttentionRange(30);
-    this.setEffectRange(20);
+    this.setAttentionRange(60);
+    this.setEffectRange(40);
     this.setEffectRate(1500);
     this.setDamageAmount(20);
     this.setCost(4);

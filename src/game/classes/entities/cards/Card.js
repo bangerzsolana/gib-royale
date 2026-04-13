@@ -7,8 +7,8 @@ class Card extends Phaser.GameObjects.Container {
 
     this.troopClass = troopClass;
     this.coinSymbol = coinSymbol || null;
-    this.width = 68;
-    this.height = 85;
+    this.width = 136;
+    this.height = 170;
 
     this.isSelected = false;
 
@@ -36,13 +36,13 @@ class Card extends Phaser.GameObjects.Container {
     this.background = scene.add
       .rectangle(0, 0, this.width, this.height, bgColor)
       .setOrigin(0, 0)
-      .setStrokeStyle(1, strokeColor);
+      .setStrokeStyle(2, strokeColor);
     this.add(this.background);
 
     const circleColor = coinColor;
 
     this.coinCircle = scene.add
-      .circle(this.width / 2, 32, 16, circleColor)
+      .circle(this.width / 2, 64, 32, circleColor)
       .setOrigin(0.5, 0.5);
     this.add(this.coinCircle);
 
@@ -50,8 +50,8 @@ class Card extends Phaser.GameObjects.Container {
     if (coinSymbol) {
       this.add(
         scene.add
-          .text(this.width / 2, 56, coinSymbol, {
-            fontSize: "10px",
+          .text(this.width / 2, 112, coinSymbol, {
+            fontSize: "20px",
             fontFamily: "Arial, sans-serif",
             color: "#ffffff",
             fontStyle: "bold"
@@ -64,13 +64,13 @@ class Card extends Phaser.GameObjects.Container {
     const cost = troopClass.COST;
     this.add(
       scene.add
-        .circle(10, 10, 10, 0x3366ff)
+        .circle(20, 20, 20, 0x3366ff)
         .setOrigin(0.5, 0.5)
     );
     this.add(
       scene.add
-        .text(10, 10, cost, {
-          fontSize: "11px",
+        .text(20, 20, cost, {
+          fontSize: "22px",
           fontFamily: "Arial, sans-serif",
           color: "#ffffff",
           fontStyle: "bold"
@@ -82,8 +82,8 @@ class Card extends Phaser.GameObjects.Container {
     const role = coinSymbol ? priceService.getTokenRole(coinSymbol) : troopClass.NAME.replace("Troop", "");
     const roleColors = { 'Tank': '#4488ff', 'Fighter': '#ffaa33', 'Glass Cannon': '#ff4466' };
     this.roleLabel = scene.add
-      .text(this.width / 2, 66, role, {
-        fontSize: "7px",
+      .text(this.width / 2, 132, role, {
+        fontSize: "14px",
         fontFamily: "Arial, sans-serif",
         color: roleColors[role] || "#888899"
       })
@@ -92,8 +92,8 @@ class Card extends Phaser.GameObjects.Container {
 
     // Live price indicator — prominent, below role name
     this.priceIndicator = scene.add
-      .text(this.width / 2, 76, "—", {
-        fontSize: "10px",
+      .text(this.width / 2, 152, "—", {
+        fontSize: "20px",
         fontFamily: "Arial, sans-serif",
         fontStyle: "bold",
         color: "#666688"

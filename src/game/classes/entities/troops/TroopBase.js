@@ -38,8 +38,8 @@ class TroopBase extends PhysicalEntity {
     const height = this.height;
     this.setCircle(width / 4, width / 4, height / 4)
       .setCollideWorldBounds(true)
-      .setMaxVelocity(30, 30)
-      .setDrag(10)
+      .setMaxVelocity(60, 60)
+      .setDrag(20)
       .setBounce(0.5)
       .setFriction(10)
       .setOrigin(0.5, 0.5)
@@ -64,12 +64,12 @@ class TroopBase extends PhysicalEntity {
     const label = config.tokenId || "";
     this.coinLabel = scene.add
       .text(this.x, this.y, label, {
-        fontSize: "9px",
+        fontSize: "18px",
         fontFamily: "Arial, sans-serif",
         color: "#ffffff",
         fontStyle: "bold",
         stroke: "#000000",
-        strokeThickness: 2
+        strokeThickness: 4
       })
       .setOrigin(0.5, 0.5)
       .setDepth(999997);
@@ -93,7 +93,7 @@ class TroopBase extends PhysicalEntity {
 
     // Keep coin label following the troop
     if (this.coinLabel && !this.isDestroyed) {
-      this.coinLabel.setPosition(this.x, this.y + 2);
+      this.coinLabel.setPosition(this.x, this.y + 4);
     }
   }
 

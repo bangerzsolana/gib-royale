@@ -27,7 +27,7 @@ export default class PlayScene extends Scene {
       const gameHeight = this.game.config.height;
 
       this.cardHolderWidth = gameWidth;
-      this.cardHolderHeight = 120;
+      this.cardHolderHeight = 240;
 
       // Set physics world size (exclude card holder area)
       this.physics.world.setBounds(

@@ -8,7 +8,7 @@ export default class ComputerPlayer extends Player {
     const worldHeight = scene.physics.world.bounds.height;
     const halfWorldWidth = worldWidth / 2;
 
-    super(scene, 0, 0, halfWorldWidth, 50, 1);
+    super(scene, 0, 0, halfWorldWidth, 100, 1);
 
     this.manaBank = new ManaBank(scene, 0, 0, 10, 10, 10);
 
@@ -29,7 +29,7 @@ export default class ComputerPlayer extends Player {
         const pick = COIN_DECK[Math.floor(Math.random() * COIN_DECK.length)];
         this.spawnTroop(
           parseInt(Math.random() * this.scene.game.config.width, 0),
-          80,
+          160,
           this.troopVelocityDirection,
           pick.troopClass,
           pick.symbol

@@ -8,8 +8,8 @@ class MamaCowTroop extends Troop {
     super(MIXINS, { ...config, animKeyPrefix: STATIC.ANIM_KEY_PREFIX });
     this.setMovementSpeed(10);
     this.setOverallHealth(50);
-    this.setAttentionRange(40);
-    this.setEffectRange(40);
+    this.setAttentionRange(80);
+    this.setEffectRange(80);
     this.setEffectRate(2000);
     this.setDamageAmount(100);
     this.setCost(4);

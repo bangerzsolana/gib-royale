@@ -12,8 +12,8 @@ class TitleScene extends Scene {
     this.cameras.main.setBackgroundColor("#1a1a2e");
 
     this.add
-      .text(centerX, centerY - 60, "Gib\nRoyale", {
-        fontSize: "48px",
+      .text(centerX, centerY - 120, "Gib\nRoyale", {
+        fontSize: "96px",
         fontFamily: "Arial, sans-serif",
         color: "#ffffff",
         fontStyle: "bold",
@@ -22,8 +22,8 @@ class TitleScene extends Scene {
       .setOrigin(0.5, 0.5);
 
     this.add
-      .text(centerX, centerY + 20, "Tap to play", {
-        fontSize: "16px",
+      .text(centerX, centerY + 40, "Tap to play", {
+        fontSize: "32px",
         fontFamily: "Arial, sans-serif",
         color: "#aaaacc"
       })
@@ -31,8 +31,8 @@ class TitleScene extends Scene {
 
     // Cards gallery button
     const cardsBtn = this.add
-      .text(centerX, centerY + 70, "[ CARD GALLERY ]", {
-        fontSize: "14px",
+      .text(centerX, centerY + 140, "[ CARD GALLERY ]", {
+        fontSize: "28px",
         fontFamily: "Arial, sans-serif",
         color: "#ffcc00",
         fontStyle: "bold"

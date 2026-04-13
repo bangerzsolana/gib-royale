@@ -5,8 +5,8 @@ class HasEffects {
     var attributes = {
       effects: [],
       effectRate: 1000,
-      effectRange: 30,
-      attentionRange: 50,
+      effectRange: 60,
+      attentionRange: 100,
       lastEffectTime: -1,
       effectTarget: null,
       attentionArea: null
@@ -119,7 +119,7 @@ HasEffects.methods = {
               this,
               effectTarget.x,
               effectTarget.y,
-              100
+              200
             );
         } else {
           this.setAcceleration(0, 0);

@@ -7,8 +7,8 @@ class QuackerTroop extends Troop {
     super(MIXINS, { ...config, animKeyPrefix: STATIC.ANIM_KEY_PREFIX });
     this.setMovementSpeed(10);
     this.setOverallHealth(50);
-    this.setAttentionRange(20);
-    this.setEffectRange(20);
+    this.setAttentionRange(40);
+    this.setEffectRange(40);
     this.setEffectRate(200);
     this.setDamageAmount(5);
     this.setCost(4);

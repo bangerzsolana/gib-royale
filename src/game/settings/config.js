@@ -36,7 +36,7 @@ export var config = {
   scale: {
     parent: "game-container",
     mode: Phaser.Scale.FIT,
-    width: 360,
-    height: 640
+    width: 720,
+    height: 1280
   }
 };

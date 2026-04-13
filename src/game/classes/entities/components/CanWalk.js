@@ -4,7 +4,7 @@ class CanWalk {
   constructor() {
     var attributes = {
       canMove: true,
-      movementSpeed: 100,
+      movementSpeed: 200,
       velocityDirection: 1,
       currentWaypoint: null
     };

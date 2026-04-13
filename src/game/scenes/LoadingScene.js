@@ -1,11 +1,12 @@
 import { Scene } from "phaser";
+import { priceService } from "../services/PriceService.js";
 
 export default class LoadingScene extends Scene {
   constructor() {
     super("LoadingScene");
   }
 
-  create() {
+  async create() {
     try {
       console.log("[LoadingScene] create() start");
 
@@ -37,10 +38,19 @@ export default class LoadingScene extends Scene {
       particleRect.generateTexture("particle-rect", 12, 12);
       particleRect.destroy();
 
-      console.log("[LoadingScene] textures generated, starting TitleScene");
+      console.log("[LoadingScene] textures generated, loading market caps from Railway DB...");
+
+      // Pre-load market caps from Railway DB BEFORE gameplay starts.
+      // This ensures HP (derived from market cap) is always available at troop spawn.
+      // Railway DB updates every 5 min — this is live data, not static.
+      await priceService.fetchAllMarketCaps();
+
+      console.log("[LoadingScene] market caps loaded, starting TitleScene");
       this.scene.start("TitleScene");
     } catch (e) {
       console.error("[LoadingScene] error:", e);
+      // Still start the game even if market cap fetch fails
+      this.scene.start("TitleScene");
     }
   }
 }

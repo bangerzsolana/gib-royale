@@ -16,44 +16,6 @@ const POWER_SCALE = 1000;
 // Railway API for coins without Pyth feeds (updated every 5 min, CMC/CoinGecko-sourced)
 const RAILWAY_API_URL = 'https://uniblock-migration-production.up.railway.app/api/latest';
 
-// Static market cap data (USD) — used for HP assignment.
-// Market cap is structural/identity data, NOT live data.
-// Updates slowly (weeks/months), so hardcoding avoids async race conditions.
-// HP must ALWAYS be available at troop spawn — no API dependency.
-const STATIC_MARKET_CAPS = {
-  // Mega-cap (>$50B)
-  BTC:   1_200_000_000_000,  // ~$1.2T
-  ETH:     200_000_000_000,  // ~$200B
-  SOL:      80_000_000_000,  // ~$80B
-  LINK:     10_000_000_000,  // ~$10B
-  // Large-cap ($5B-$50B)
-  RENDER:    4_000_000_000,  // ~$4B
-  TRUMP:     3_000_000_000,  // ~$3B
-  VIRTUAL:   2_000_000_000,  // ~$2B
-  BONK:      1_500_000_000,  // ~$1.5B
-  POPCAT:    1_000_000_000,  // ~$1B
-  FARTCOIN:    800_000_000,  // ~$800M
-  WIF:         700_000_000,  // ~$700M
-  RAY:         600_000_000,  // ~$600M
-  PYTH:        500_000_000,  // ~$500M
-  JTO:         400_000_000,  // ~$400M
-  GRASS:       350_000_000,  // ~$350M
-  // Mid-cap ($50M-$500M)
-  MOODENG:     300_000_000,  // ~$300M
-  PNUT:        200_000_000,  // ~$200M
-  ORCA:        150_000_000,  // ~$150M
-  MELANIA:     150_000_000,  // ~$150M
-  VINE:        100_000_000,  // ~$100M
-  SEND:        100_000_000,  // ~$100M
-  WEN:          80_000_000,  // ~$80M
-  FWOG:         70_000_000,  // ~$70M
-  PUMP:         60_000_000,  // ~$60M
-  AIXBT:        50_000_000,  // ~$50M
-  // Small-cap ($5M-$50M)
-  RETARDIO:     30_000_000,  // ~$30M
-  SPX:          20_000_000,  // ~$20M
-  GRIFFAIN:     15_000_000,  // ~$15M
-};
 
 // All 110 game coins — non-Pyth ones get data from Railway API
 const NON_PYTH_COINS = [
@@ -362,11 +324,9 @@ class PriceService {
 
   /**
    * Get market cap for a coin.
-   * Uses hardcoded static data first (always available, no async dependency),
-   * then falls back to API-fetched data if the coin isn't in the static table.
+   * Data comes from Railway DB (updated every 5 min), loaded before gameplay starts.
    */
   getMarketCap(symbol) {
-    if (STATIC_MARKET_CAPS[symbol]) return STATIC_MARKET_CAPS[symbol];
     return (this.tokens[symbol] && this.tokens[symbol].marketCap) || 0;
   }
 

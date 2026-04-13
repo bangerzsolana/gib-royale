@@ -14,18 +14,32 @@ class Card extends Phaser.GameObjects.Container {
 
     scene.add.existing(this).setDepth(10000);
 
-    // Card background
-    this.background = scene.add
-      .rectangle(0, 0, this.width, this.height, 0x2a2a3e)
-      .setOrigin(0, 0)
-      .setStrokeStyle(1, 0x555577);
-    this.add(this.background);
-
-    // Coin color circle in center
+    // Coin color lookup
     const coinEntry = coinSymbol
       ? (scene.game.__coinDeckLookup && scene.game.__coinDeckLookup[coinSymbol])
       : null;
-    const circleColor = coinEntry ? coinEntry.color : 0x888888;
+    const coinColor = coinEntry ? coinEntry.color : 0x888888;
+
+    // Card background — tinted with coin's unique color (darkened)
+    const r = (coinColor >> 16) & 0xff;
+    const g = (coinColor >> 8) & 0xff;
+    const b = coinColor & 0xff;
+    const darkR = Math.floor(r * 0.25);
+    const darkG = Math.floor(g * 0.25);
+    const darkB = Math.floor(b * 0.25);
+    const bgColor = (darkR << 16) | (darkG << 8) | darkB;
+    const strokeR = Math.floor(r * 0.5);
+    const strokeG = Math.floor(g * 0.5);
+    const strokeB = Math.floor(b * 0.5);
+    const strokeColor = (strokeR << 16) | (strokeG << 8) | strokeB;
+
+    this.background = scene.add
+      .rectangle(0, 0, this.width, this.height, bgColor)
+      .setOrigin(0, 0)
+      .setStrokeStyle(1, strokeColor);
+    this.add(this.background);
+
+    const circleColor = coinColor;
 
     this.coinCircle = scene.add
       .circle(this.width / 2, 32, 16, circleColor)

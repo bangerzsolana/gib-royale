@@ -64,16 +64,17 @@ class Card extends Phaser.GameObjects.Container {
         .setOrigin(0.5, 0.5)
     );
 
-    // Role/type indicator below coin name
-    this.add(
-      scene.add
-        .text(this.width / 2, 66, troopClass.NAME.replace("Troop", ""), {
-          fontSize: "7px",
-          fontFamily: "Arial, sans-serif",
-          color: "#888899"
-        })
-        .setOrigin(0.5, 0.5)
-    );
+    // Role indicator below coin name (market-cap-based: Tank, Fighter, Glass Cannon)
+    const role = coinSymbol ? priceService.getTokenRole(coinSymbol) : troopClass.NAME.replace("Troop", "");
+    const roleColors = { 'Tank': '#4488ff', 'Fighter': '#ffaa33', 'Glass Cannon': '#ff4466' };
+    this.roleLabel = scene.add
+      .text(this.width / 2, 66, role, {
+        fontSize: "7px",
+        fontFamily: "Arial, sans-serif",
+        color: roleColors[role] || "#888899"
+      })
+      .setOrigin(0.5, 0.5);
+    this.add(this.roleLabel);
 
     // Live price indicator — prominent, below role name
     this.priceIndicator = scene.add

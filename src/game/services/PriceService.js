@@ -484,15 +484,23 @@ class PriceService {
   }
 
   /**
-   * Get role based on power score
+   * Get role based on market cap (stable identity that doesn't change day-to-day).
+   *
+   * Market cap determines WHAT the card IS:
+   *   Mega/large cap (>$5B)     → Tank   — high HP, slow, durable
+   *   Mid cap ($500M–$5B)       → Fighter — balanced stats
+   *   Small/micro cap (<$500M)  → Glass Cannon — low HP, fast, high damage
+   *
+   * Power (volatile) determines HOW the card FEELS right now (ATK/DEF boost),
+   * but role is tied to market cap so players can learn and remember card identities.
    */
   getTokenRole(symbol) {
-    const power = this.calcPower(symbol);
-    if (power > 5) return 'glass-cannon';
-    if (power > 1) return 'attacker';
-    if (power > -1) return 'utility';
-    if (power > -5) return 'defender';
-    return 'fortress';
+    const cap = this.getMarketCap(symbol);
+    if (!cap || cap <= 0) return 'Fighter'; // Default if no data
+
+    if (cap >= 5e9)   return 'Tank';          // >$5B — mega/large cap
+    if (cap >= 500e6) return 'Fighter';       // $500M–$5B — mid cap
+    return 'Glass Cannon';                    // <$500M — small/micro cap
   }
 
   /**

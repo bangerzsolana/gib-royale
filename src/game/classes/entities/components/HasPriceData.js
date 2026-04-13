@@ -251,11 +251,11 @@ HasPriceData.methods = {
           this.applyMarketStats();
         }
 
-        // Use EMA momentum as percent change: (price - ema) / ema * 100
-        const momentum = tokenData.emaPrice
-          ? ((tokenData.price - tokenData.emaPrice) / tokenData.emaPrice) * 100
-          : 0;
-        this.priceChangePercent = momentum;
+        // Power IS the real-time intensity modifier.
+        // power = ((price - ema) / ema) × 1000 — the same number shown on Gib Meme.
+        // We convert to percentage scale for the multiplier thresholds.
+        const power = tokenData.power || 0;
+        this.priceChangePercent = power / 10; // power 10 = 1% momentum
         this.recalculateStats();
         this.updatePriceIndicator();
 

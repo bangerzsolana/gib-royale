@@ -26,6 +26,10 @@ const NON_PYTH_COINS = [
 
 // All gib-meme coins with Pyth feed IDs (crypto + stock-mirror tokens)
 const PYTH_COINS = [
+  // ── Blue-chip / mega-cap ──
+  { symbol: 'BTC',      feedId: 'e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43' },
+  { symbol: 'ETH',      feedId: 'ff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace' },
+  { symbol: 'SOL',      feedId: 'ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d' },
   // ── Meme / Solana tokens ──
   { symbol: 'BONK',     feedId: '72b021217ca3fe68922a19aaf990109cb9d84e9ad004b4d2025ad6f529314419' },
   { symbol: 'WIF',      feedId: '4ca4beeca86f0d164160323817a4e42b10010a724c2217c6ee41b54cd4cc61fc' },

@@ -1,4 +1,3 @@
-import Phaser from "phaser";
 import { priceService } from "../../../services/PriceService.js";
 
 /**
@@ -7,7 +6,7 @@ import { priceService } from "../../../services/PriceService.js";
  * Links a deployed troop to a real token's price action:
  * - Pumping tokens (positive % change) = higher attack power
  * - Dumping tokens (negative % change) = higher defense (damage reduction)
- * - Extreme moves trigger special effects (rug pull, moon shot)
+ * - % change is tracked from the moment of deployment (personal P&L)
  */
 class HasPriceData {
   constructor() {
@@ -23,8 +22,6 @@ class HasPriceData {
       damageMultiplier: 1,
       defenseMultiplier: 1,
       speedMultiplier: 1, // Market-cap-based: heavy coins move slower
-      isRugged: false,
-      isMooning: false,
       priceIndicator: null
     };
 
@@ -83,77 +80,6 @@ HasPriceData.methods = {
     // Apply damage multiplier
     if (this.setDamageAmount) {
       this.setDamageAmount(Math.round(this.baseDamage * this.damageMultiplier));
-    }
-
-    // Check for special events
-    this.checkSpecialEvents(pct);
-  },
-
-  /**
-   * Special market events that affect gameplay
-   */
-  checkSpecialEvents(pct) {
-    // Rug Pull: token dumps >25% — explodes, area damage to both sides
-    if (pct < -25 && !this.isRugged) {
-      this.isRugged = true;
-      this.triggerRugPull();
-    }
-
-    // Moon Shot: token pumps >50% — temporary super mode
-    if (pct > 50 && !this.isMooning) {
-      this.isMooning = true;
-      this.triggerMoonShot();
-    }
-  },
-
-  triggerRugPull() {
-    // Visual: flash red, expand, then explode
-    if (this.scene) {
-      this.scene.tweens.add({
-        targets: [this],
-        scaleX: 2,
-        scaleY: 2,
-        alpha: 0,
-        tint: 0xff0000,
-        duration: 500,
-        onComplete: () => {
-          // Deal area damage to ALL nearby troops (both sides)
-          const allTroops = [
-            ...this.owner.troops.getChildren(),
-            ...(this.owner.opponent ? this.owner.opponent.troops.getChildren() : [])
-          ];
-          allTroops.forEach(troop => {
-            if (troop === this || troop.isDestroyed) return;
-            const dist = Phaser.Math.Distance.Between(this.x, this.y, troop.x, troop.y);
-            if (dist < 40) {
-              troop.deductHealth(50);
-            }
-          });
-          this.destroy();
-        }
-      });
-    }
-  },
-
-  triggerMoonShot() {
-    // Visual: glow gold, double damage for 5 seconds
-    if (this.scene) {
-      this.setTint(0xffdd00);
-      this.damageMultiplier *= 2;
-      if (this.setDamageAmount) {
-        this.setDamageAmount(Math.round(this.baseDamage * this.damageMultiplier));
-      }
-
-      this.scene.time.addEvent({
-        delay: 5000,
-        callback: () => {
-          if (!this.isDestroyed) {
-            this.isMooning = false;
-            this.setTint(this.coinColor || 0xffffff);
-            this.recalculateStats();
-          }
-        }
-      });
     }
   },
 

@@ -95,29 +95,32 @@ HasPriceData.methods = {
 
   /**
    * Apply data-driven combat stats from market data.
-   * HP from market cap, damage from volatility, speed from inverse market cap.
-   * Overwrites the hardcoded troop stats with real market-derived values.
+   * HP from market cap (logarithmic scale).
+   * Only marks as applied when real market cap data is available.
    */
   applyMarketStats() {
     if (!this.tokenId) return;
     const stats = priceService.getCombatStats(this.tokenId);
     if (!stats) return;
 
-    // HP from market cap
-    if (stats.hp && this.setOverallHealth) {
+    // Only apply HP if we have real market cap data (not the fallback)
+    if (stats.marketCap > 0 && stats.hp && this.setOverallHealth) {
       this.baseHealth = stats.hp;
       this.setOverallHealth(stats.hp);
     }
 
-    // Base damage from volatility
+    // Base damage (flat 15 for now)
     if (stats.damage) {
       this.baseDamage = stats.damage;
       if (this.setDamageAmount) {
-        this.setDamageAmount(Math.round(this.baseDamage * this.damageMultiplier));
+        this.setDamageAmount(Math.round(this.baseDamage * this.powerMultiplier));
       }
     }
 
-    this._marketStatsApplied = true;
+    // Only mark as applied when we actually have market cap data
+    if (stats.marketCap > 0) {
+      this._marketStatsApplied = true;
+    }
   },
 
   _init() {

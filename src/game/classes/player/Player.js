@@ -79,7 +79,7 @@ class Player {
     return this;
   }
 
-  spawnTroop(x, y, velocityDirection, troopClass, tokenId) {
+  spawnTroop(x, y, velocityDirection, troopClass, tokenId, spawnPrice) {
     try {
       if (!Phaser.Geom.Rectangle.Contains(this.spawnZone, x, y)) return;
 
@@ -101,7 +101,8 @@ class Player {
         x,
         y,
         velocityDirection,
-        tokenId: tokenId || null
+        tokenId: tokenId || null,
+        spawnPrice: spawnPrice || null
       });
 
       this.manaBank.deductMana(CardType.cost);

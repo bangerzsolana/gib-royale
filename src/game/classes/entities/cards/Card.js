@@ -89,8 +89,13 @@ class Card extends Phaser.GameObjects.Container {
       .setOrigin(0.5, 0.5);
     this.add(this.priceIndicator);
 
-    // Start live price update timer
+    // Snapshot price when card spawns in hand — all % tracking starts here
+    this.spawnPrice = null;
     if (coinSymbol) {
+      const tokenData = priceService.getTokenWithPower(coinSymbol);
+      if (tokenData && tokenData.price > 0) {
+        this.spawnPrice = tokenData.price;
+      }
       this.updatePriceIndicator();
       this.priceTimer = scene.time.addEvent({
         delay: 3000,
@@ -106,11 +111,20 @@ class Card extends Phaser.GameObjects.Container {
     const tokenData = priceService.getTokenWithPower(this.coinSymbol);
     if (!tokenData) return;
 
-    const power = tokenData.power || 0;
-    const arrow = power >= 0 ? "▲" : "▼";
-    const color = power >= 0 ? "#00ff44" : "#ff4444";
-    this.priceIndicator.setText(`${arrow} ${Math.abs(power).toFixed(1)}%`);
-    this.priceIndicator.setColor(color);
+    // Snapshot spawn price if we didn't get it at creation (data arrived late)
+    if (!this.spawnPrice && tokenData.price > 0) {
+      this.spawnPrice = tokenData.price;
+    }
+
+    // Show % change from when card spawned in hand, with 100x scaling
+    if (this.spawnPrice && tokenData.price > 0) {
+      const rawPct = ((tokenData.price - this.spawnPrice) / this.spawnPrice) * 100;
+      const scaledPct = rawPct * 100;
+      const arrow = scaledPct >= 0 ? "▲" : "▼";
+      const color = scaledPct >= 0 ? "#00ff44" : "#ff4444";
+      this.priceIndicator.setText(`${arrow} ${Math.abs(scaledPct).toFixed(4)}%`);
+      this.priceIndicator.setColor(color);
+    }
   }
 
   destroy() {

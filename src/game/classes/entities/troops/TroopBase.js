@@ -89,6 +89,10 @@ class TroopBase extends PhysicalEntity {
     if (config.tokenId) {
       this.setTokenId(config.tokenId);
     }
+    // Use the card's spawn price (from when it appeared in hand) as the tracking baseline
+    if (config.spawnPrice) {
+      this.deployPrice = config.spawnPrice;
+    }
   }
 
   // Override deductHealth to apply power multiplier from HasPriceData

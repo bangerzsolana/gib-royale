@@ -13,7 +13,7 @@ class HasPriceData {
     var attributes = {
       tokenId: null,
       priceChangePercent: 0,
-      deployPrice: null, // Price snapshot at deployment — all % change is relative to this
+      deployPrice: null, // Price snapshot from when card spawned in hand — all % change is relative to this
       baseDamage: 10,
       baseHealth: 100,
       baseMovementSpeed: 0, // Set at spawn from troop's hardcoded speed
@@ -118,11 +118,14 @@ HasPriceData.methods = {
 
     this._marketStatsApplied = false;
 
-    // Snapshot the current price at deployment — all future % change is relative to this
+    // Use the card's spawn price if passed through from the card (set before _init runs).
+    // Only snapshot current price if no spawn price was provided (e.g., computer player troops).
     if (this.tokenId) {
-      const tokenData = priceService.getTokenWithPower(this.tokenId);
-      if (tokenData && tokenData.price > 0) {
-        this.deployPrice = tokenData.price;
+      if (!this.deployPrice) {
+        const tokenData = priceService.getTokenWithPower(this.tokenId);
+        if (tokenData && tokenData.price > 0) {
+          this.deployPrice = tokenData.price;
+        }
       }
       this.applyMarketStats();
     }
@@ -162,13 +165,13 @@ HasPriceData.methods = {
           this.deployPrice = tokenData.price;
         }
 
-        // Calculate % change from deployment price — this is the core mechanic.
-        // Each troop tracks its own P&L from the moment it was placed on the battlefield.
-        // 10x scaling factor so small real-world crypto moves feel meaningful in-game.
+        // Calculate % change from spawn price — this is the core mechanic.
+        // Tracking starts when the card appears in the player's hand, not when deployed.
+        // 100x scaling factor so small real-world crypto moves feel meaningful in-game.
         if (this.deployPrice && tokenData.price > 0) {
           const rawPct =
             ((tokenData.price - this.deployPrice) / this.deployPrice) * 100;
-          this.priceChangePercent = rawPct * 10;
+          this.priceChangePercent = rawPct * 100;
         }
 
         this.recalculateStats();

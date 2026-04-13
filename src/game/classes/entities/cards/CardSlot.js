@@ -5,8 +5,8 @@ class CardSlot extends Phaser.GameObjects.Container {
     super(scene, x, y);
 
     this.hand = hand;
-    this.width = 144;
-    this.height = 180;
+    this.width = 94;
+    this.height = 110;
     this.originalY = y;
 
     this.card = null;
@@ -40,14 +40,18 @@ class CardSlot extends Phaser.GameObjects.Container {
   insertCard(card) {
     if (this.card) this.removeCard();
     this.card = card;
-    this.card.setPosition(4, 4);
+    this.card.setPosition(2, 2);
     this.add(card);
     // Keep dim overlay on top
     this.bringToTop(this.dimOverlay);
+    // Start price tracking when card enters hand
+    card.startPriceTracking();
   }
 
   removeCard() {
     let cardRef = this.card;
+    // Stop price tracking when card leaves hand
+    cardRef.stopPriceTracking();
     this.remove(this.card);
     this.card = null;
     return cardRef;

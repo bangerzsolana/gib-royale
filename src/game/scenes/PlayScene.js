@@ -22,8 +22,8 @@ export default class PlayScene extends Scene {
       const gameHeight = this.game.config.height;
 
       this.cardHolderWidth = gameWidth;
-      this.cardHolderHeight = 180;
-      this.topCardHolderHeight = 180;
+      this.cardHolderHeight = 130;
+      this.topCardHolderHeight = 130;
 
       // Field area between the two card areas
       const fieldY = this.topCardHolderHeight;

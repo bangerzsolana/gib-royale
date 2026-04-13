@@ -19,14 +19,14 @@ class CardArea extends Phaser.GameObjects.Container {
     );
 
     // "Next" card preview on the left (small)
-    this.deck = new Deck(scene, 8, 36, 72, 96);
+    this.deck = new Deck(scene, 6, 20, 60, 80);
     this.add(this.deck);
 
     // "NEXT" label above deck preview
     this.add(
       scene.add
-        .text(44, 16, "NEXT", {
-          fontSize: "12px",
+        .text(36, 10, "NEXT", {
+          fontSize: "10px",
           fontFamily: "Arial, sans-serif",
           color: "#888899"
         })
@@ -34,7 +34,7 @@ class CardArea extends Phaser.GameObjects.Container {
     );
 
     // Hand starts after deck area to avoid overlap
-    this.hand = new Hand(scene, this.deck, 92, 20, width - 100, 200, manaBank);
+    this.hand = new Hand(scene, this.deck, 72, 6, width - 80, 120, manaBank);
     this.add(this.hand);
   }
 

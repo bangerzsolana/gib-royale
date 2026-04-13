@@ -7,8 +7,8 @@ class Card extends Phaser.GameObjects.Container {
 
     this.troopClass = troopClass;
     this.coinSymbol = coinSymbol || null;
-    this.width = 136;
-    this.height = 170;
+    this.width = 90;
+    this.height = 105;
 
     this.isSelected = false;
 
@@ -42,7 +42,7 @@ class Card extends Phaser.GameObjects.Container {
     const circleColor = coinColor;
 
     this.coinCircle = scene.add
-      .circle(this.width / 2, 64, 32, circleColor)
+      .circle(this.width / 2, 38, 20, circleColor)
       .setOrigin(0.5, 0.5);
     this.add(this.coinCircle);
 
@@ -50,8 +50,8 @@ class Card extends Phaser.GameObjects.Container {
     if (coinSymbol) {
       this.add(
         scene.add
-          .text(this.width / 2, 112, coinSymbol, {
-            fontSize: "20px",
+          .text(this.width / 2, 68, coinSymbol, {
+            fontSize: "14px",
             fontFamily: "Arial, sans-serif",
             color: "#ffffff",
             fontStyle: "bold"
@@ -64,13 +64,13 @@ class Card extends Phaser.GameObjects.Container {
     const cost = troopClass.COST;
     this.add(
       scene.add
-        .circle(20, 20, 20, 0x3366ff)
+        .circle(14, 14, 14, 0x3366ff)
         .setOrigin(0.5, 0.5)
     );
     this.add(
       scene.add
-        .text(20, 20, cost, {
-          fontSize: "22px",
+        .text(14, 14, cost, {
+          fontSize: "16px",
           fontFamily: "Arial, sans-serif",
           color: "#ffffff",
           fontStyle: "bold"
@@ -80,8 +80,8 @@ class Card extends Phaser.GameObjects.Container {
 
     // Live price indicator — below coin name
     this.priceIndicator = scene.add
-      .text(this.width / 2, 136, "—", {
-        fontSize: "20px",
+      .text(this.width / 2, 88, "—", {
+        fontSize: "13px",
         fontFamily: "Arial, sans-serif",
         fontStyle: "bold",
         color: "#666688"
@@ -89,19 +89,43 @@ class Card extends Phaser.GameObjects.Container {
       .setOrigin(0.5, 0.5);
     this.add(this.priceIndicator);
 
-    // Snapshot price when card spawns in hand — all % tracking starts here
+    // Price tracking starts when card enters hand, not when created
     this.spawnPrice = null;
-    if (coinSymbol) {
-      const tokenData = priceService.getTokenWithPower(coinSymbol);
-      if (tokenData && tokenData.price > 0) {
-        this.spawnPrice = tokenData.price;
-      }
-      this.updatePriceIndicator();
-      this.priceTimer = scene.time.addEvent({
-        delay: 3000,
-        callback: () => this.updatePriceIndicator(),
-        loop: true
-      });
+    this.priceTimer = null;
+  }
+
+  // Called when card enters a hand slot — starts price tracking from zero
+  startPriceTracking() {
+    if (!this.coinSymbol || !this.scene) return;
+
+    // Reset spawn price to current price (tracking starts NOW)
+    this.spawnPrice = null;
+    const tokenData = priceService.getTokenWithPower(this.coinSymbol);
+    if (tokenData && tokenData.price > 0) {
+      this.spawnPrice = tokenData.price;
+    }
+
+    // Clear old timer if re-entering hand
+    if (this.priceTimer) this.priceTimer.destroy();
+
+    this.updatePriceIndicator();
+    this.priceTimer = this.scene.time.addEvent({
+      delay: 3000,
+      callback: () => this.updatePriceIndicator(),
+      loop: true
+    });
+  }
+
+  // Called when card leaves hand (goes back to deck)
+  stopPriceTracking() {
+    if (this.priceTimer) {
+      this.priceTimer.destroy();
+      this.priceTimer = null;
+    }
+    this.spawnPrice = null;
+    if (this.priceIndicator) {
+      this.priceIndicator.setText("—");
+      this.priceIndicator.setColor("#666688");
     }
   }
 
@@ -116,7 +140,7 @@ class Card extends Phaser.GameObjects.Container {
       this.spawnPrice = tokenData.price;
     }
 
-    // Show % change from when card spawned in hand, with 100x scaling
+    // Show % change from when card entered hand, with 100x scaling
     if (this.spawnPrice && tokenData.price > 0) {
       const rawPct = ((tokenData.price - this.spawnPrice) / this.spawnPrice) * 100;
       const scaledPct = rawPct * 100;

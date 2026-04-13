@@ -24,9 +24,10 @@ export default class ControlledPlayer extends Player {
     const gameHeight = scene.game.config.height;
 
     // Position mana bar and card area based on side
+    // Mana bar sits at the border between card area and field
     const manaBarY = isTop
-      ? scene.topCardHolderHeight - 16
-      : gameHeight - scene.cardHolderHeight - 16;
+      ? scene.topCardHolderHeight - 18
+      : gameHeight - 18;
 
     const cardAreaY = isTop ? 0 : gameHeight - scene.cardHolderHeight;
 

@@ -108,12 +108,6 @@ class CardGalleryScene extends Scene {
           margin: 4px 0;
           font-variant-numeric: tabular-nums;
         }
-        #card-gallery-overlay .cg-role {
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 1px;
-          margin-bottom: 4px;
-        }
         #card-gallery-overlay .cg-price {
           font-size: 10px;
           color: #888;
@@ -133,9 +127,6 @@ class CardGalleryScene extends Scene {
       </div>
       <div class="cg-filters" id="cg-filters">
         <button class="cg-filter-btn active" data-filter="all">ALL</button>
-        <button class="cg-filter-btn" data-filter="Tank">TANK</button>
-        <button class="cg-filter-btn" data-filter="Fighter">FIGHTER</button>
-        <button class="cg-filter-btn" data-filter="Glass Cannon">GLASS CANNON</button>
       </div>
       <div id="cg-grid-area">
         <div class="cg-loading" id="cg-loading">Fetching live Pyth data...</div>
@@ -206,12 +197,10 @@ class CardGalleryScene extends Scene {
       card.dataset.symbol = token.id;
 
       const power = token.power;
-      const role = priceService.getTokenRole(token.id);
 
       card.innerHTML = `
         <div class="cg-name">${token.name}</div>
         <div class="cg-power" style="color: ${power >= 0 ? '#44ff44' : '#ff4444'}">${this._fmtPower(power)}</div>
-        <div class="cg-role" style="color: ${this._roleColorCSS(role)}">${this._roleShort(role)}</div>
         <div class="cg-price">${this._formatPrice(token.price)}</div>
       `;
 
@@ -226,12 +215,7 @@ class CardGalleryScene extends Scene {
 
   _applyFilter() {
     for (const [symbol, card] of Object.entries(this.cardEls)) {
-      const role = priceService.getTokenRole(symbol);
-      if (this._activeFilter === 'all' || role === this._activeFilter) {
-        card.style.display = '';
-      } else {
-        card.style.display = 'none';
-      }
+      card.style.display = '';
     }
     // Update count
     const visible = Object.values(this.cardEls).filter(c => c.style.display !== 'none').length;
@@ -247,12 +231,9 @@ class CardGalleryScene extends Scene {
     if (!token) return;
 
     const power = token.power;
-    const role = priceService.getTokenRole(symbol);
 
     card.querySelector(".cg-power").textContent = this._fmtPower(power);
     card.querySelector(".cg-power").style.color = power >= 0 ? "#44ff44" : "#ff4444";
-    card.querySelector(".cg-role").textContent = this._roleShort(role);
-    card.querySelector(".cg-role").style.color = this._roleColorCSS(role);
     card.querySelector(".cg-price").textContent = this._formatPrice(token.price);
     card.style.background = this._powerBgCSS(power);
   }
@@ -267,24 +248,6 @@ class CardGalleryScene extends Scene {
     if (power > -1) return "#2a2a3a";
     if (power > -5) return "#3a1a1a";
     return "#3a0a0a";
-  }
-
-  _roleColorCSS(role) {
-    const map = {
-      "Tank": "#4488ff",
-      "Fighter": "#ff8844",
-      "Glass Cannon": "#ff4444",
-    };
-    return map[role] || "#ffffff";
-  }
-
-  _roleShort(role) {
-    const map = {
-      "Tank": "TANK",
-      "Fighter": "FIGHTER",
-      "Glass Cannon": "GLASS CANNON",
-    };
-    return map[role] || role.toUpperCase();
   }
 
   _formatPrice(price) {
